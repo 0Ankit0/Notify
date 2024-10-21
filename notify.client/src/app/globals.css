@@ -2,8 +2,3 @@
 @tailwind components;
 @tailwind utilities;
 
-.btnDropdown {
-    background: none !important;
-    border: none !important;
-    box-shadow: none !important;
-  }

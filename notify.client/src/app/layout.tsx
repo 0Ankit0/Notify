@@ -1,6 +1,6 @@
-import "./globals.css";
+import "@/src/app/globals.css";
 import type { Metadata } from "next";
-import { Providers } from "./ThemeProvider";
+import { Providers } from "./providers";
 import { fontSans } from "@/src/config/fonts";
 import clsx from "clsx";
 
