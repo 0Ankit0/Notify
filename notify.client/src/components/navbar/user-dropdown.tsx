@@ -4,11 +4,9 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
-  Navbar,
   NavbarItem,
 } from "@nextui-org/react";
 import React, { useCallback } from "react";
-import { DarkModeSwitch } from "./darkmodeswitch";
 import { useRouter } from "next/navigation";
 import { deleteAuthCookie } from "@/src/actions/auth.action";
 
@@ -56,9 +54,6 @@ export const UserDropdown = () => {
           onPress={handleLogout}
         >
           Log Out
-        </DropdownItem>
-        <DropdownItem key="switch">
-          <DarkModeSwitch />
         </DropdownItem>
       </DropdownMenu>
     </Dropdown>
