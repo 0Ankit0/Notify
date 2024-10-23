@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ChevronDownIcon } from "../icons/sidebar/chevron-down-icon";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import clsx from "clsx";
+import { ChevronRightIcon } from "../icons/sidebar/chevron-right-icon";
 
 interface Props {
   icon: React.ReactNode;
@@ -38,8 +39,9 @@ export const CollapseItems = ({ icon, items, title }: Props) => {
             {items.map((item, index) => (
               <span
                 key={index}
-                className="w-full flex  text-default-500 hover:text-default-900 transition-colors"
+                className="w-full flex  text-default-500 hover:text-default-900 transition-colors gap-1 items-center"
               >
+                <ChevronRightIcon></ChevronRightIcon>
                 {item}
               </span>
             ))}
