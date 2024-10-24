@@ -2,8 +2,8 @@
 
 import { cookies } from "next/headers";
 
-export const createAuthCookie = async () => {
-  cookies().set("userAuth", "myToken", { secure: true });
+export const createAuthCookie = async (token:string) => {
+  cookies().set("userAuth", token, { secure: true });
 };
 
 export const deleteAuthCookie = async () => {
