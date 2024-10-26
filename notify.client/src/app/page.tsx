@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +18,6 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { User, Lock, LogIn, Loader2 } from "lucide-react";
 import { loginSchema, LoginFormValues } from "@/utils/loginSchema";
-
 export default function LoginForm() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const router = useRouter();
@@ -33,12 +33,21 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     setSubmitError(null);
     try {
-      console.log("Form submitted:", data);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Login successful!");
-      router.push("/dashboard");
+      const result = await signIn("credentials", {
+        username: data.username,
+        password: data.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setSubmitError(
+          "Login failed. Please check your credentials and try again."
+        );
+      } else {
+        router.push("/dashboard");
+      }
     } catch (error) {
-      setSubmitError("Login failed. Please try again.");
+      setSubmitError("An unexpected error occurred. Please try again.");
     }
   };
 
