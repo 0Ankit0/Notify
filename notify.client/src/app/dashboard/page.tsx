@@ -6,7 +6,8 @@ import CalendarDateRangePicker from "@/components/date-range-picker";
 import PageContainer from "@/components/layout/page-container";
 import { RecentSales } from "./_components/recent-sales";
 import { Button } from "@/components/ui/button";
-import React from "react";
+import React, { useEffect } from "react";
+import { useAuth } from "@/hooks/use-auth";
 import {
   Card,
   CardContent,
@@ -15,14 +16,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
 export default function Page() {
+  const { session, status } = useAuth(true);
   return (
     <PageContainer scrollable>
       <div className="space-y-2">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">
-            Hi, Welcome back 👋
+            Hi, Welcome back {session?.user?.name || "User"}👋
           </h2>
           <div className="hidden items-center space-x-2 md:flex">
             <CalendarDateRangePicker />
