@@ -1,4 +1,11 @@
 "use client";
+
+import * as React from "react";
+import { addDays, format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { DateRange } from "react-day-picker";
+
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -6,29 +13,43 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "@radix-ui/react-icons";
-import { addDays, format } from "date-fns";
-import * as React from "react";
-import { DateRange } from "react-day-picker";
 
-export default function CalendarDateRangePicker({
+export function CalendarDateRangePicker({
   className,
-}: React.HTMLAttributes<HTMLDivElement>) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2023, 0, 20),
-    to: addDays(new Date(2023, 0, 20), 20),
-  });
+  date,
+  setDate,
+}: {
+  className?: string;
+  date: DateRange | undefined;
+  setDate: (date: DateRange | undefined) => void;
+}) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [tempDate, setTempDate] = React.useState<DateRange | undefined>(date);
+
+  const defaultDateRange: DateRange = {
+    from: addDays(new Date(), -30),
+    to: new Date(),
+  };
+
+  const handleOk = () => {
+    setDate(tempDate);
+    setIsOpen(false);
+  };
+
+  const handleReset = () => {
+    setTempDate(defaultDateRange);
+    setDate(defaultDateRange);
+  };
 
   return (
     <div className={cn("grid gap-2", className)}>
-      <Popover>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
         <PopoverTrigger asChild>
           <Button
             id="date"
             variant={"outline"}
             className={cn(
-              "w-[260px] justify-start text-left font-normal",
+              "w-[300px] justify-start text-left font-normal",
               !date && "text-muted-foreground"
             )}
           >
@@ -43,19 +64,27 @@ export default function CalendarDateRangePicker({
                 format(date.from, "LLL dd, y")
               )
             ) : (
-              <span>Pick a date</span>
+              <span>Pick a date range</span>
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="end">
+        <PopoverContent className="w-auto p-0" align="start">
           <Calendar
             initialFocus
             mode="range"
             defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
+            selected={tempDate}
+            onSelect={setTempDate}
             numberOfMonths={2}
           />
+          <div className="flex justify-end gap-2 p-3 border-t">
+            <Button variant="outline" size="sm" onClick={handleReset}>
+              Reset
+            </Button>
+            <Button size="sm" onClick={handleOk}>
+              OK
+            </Button>
+          </div>
         </PopoverContent>
       </Popover>
     </div>
