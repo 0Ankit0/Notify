@@ -31,11 +31,11 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen w-full">
         <AppSidebar />
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto w-full">
           <SidebarTrigger />
-          {children}
+          <div className="w-full h-full">{children}</div>
         </main>
       </div>
     </SidebarProvider>
