@@ -14,7 +14,6 @@ import {
   SquareTerminal,
 } from "lucide-react";
 
-import { useAuth } from "@/hooks/use-auth";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
@@ -25,6 +24,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { useSession } from "next-auth/react";
 
 // This is sample data.
 const data = {
@@ -117,7 +117,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { session, status } = useAuth(true);
+  const { data: session, status } = useSession();
   data.user.name = session?.user?.name || "admin";
   data.user.email = session?.user?.email || "test@gmail.com";
   return (

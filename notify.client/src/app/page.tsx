@@ -1,14 +1,14 @@
 "use client";
 
-import { useAuth } from "@/hooks/use-auth";
 import LoginForm from "@/components/login-form";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/loading-screen";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "next-auth/react";
 
 export default function LoginPage() {
-  const { status } = useAuth();
+  const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {

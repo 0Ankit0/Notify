@@ -7,7 +7,6 @@ import PageContainer from "@/components/layout/page-container";
 import { RecentSales } from "./_components/recent-sales";
 import { Button } from "@/components/ui/button";
 import React, { useEffect, useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
 import {
   Card,
   CardContent,
@@ -18,8 +17,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
+import { useSession } from "next-auth/react";
 export default function Page() {
-  const { session, status } = useAuth(true);
+  const { data: session } = useSession();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: addDays(new Date(), -30),
     to: new Date(),
