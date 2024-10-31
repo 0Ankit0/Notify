@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import { LoadingScreen } from "@/components/loading-screen";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import AuthWrapper from "./auth-wrapper";
 
 export default function DashboardLayout({
   children,
@@ -35,7 +36,9 @@ export default function DashboardLayout({
         <AppSidebar />
         <main className="flex-1 overflow-auto w-full">
           <SidebarTrigger />
-          <div className="w-full h-full">{children}</div>
+          <div className="w-full h-full">
+            <AuthWrapper>{children}</AuthWrapper>
+          </div>
         </main>
       </div>
     </SidebarProvider>

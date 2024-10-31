@@ -43,7 +43,7 @@ export function NavMain({
             key={item.title}
             asChild
             defaultOpen={
-              item.isActive ||
+              // item.isActive ||
               item.items?.some((subItem) => pathname === subItem.url)
             }
             className="group/collapsible"
