@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -10,8 +11,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -26,13 +25,15 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Save, RefreshCw } from "lucide-react";
+import { Save, RefreshCw, PlusCircle } from "lucide-react";
 import { CalendarDateRangePicker } from "@/components/date-range-picker";
 import { addDays, parseISO } from "date-fns";
 import { DateRange } from "react-day-picker";
 import PageContainer from "@/components/layout/page-container";
 import { Textarea } from "@/components/ui/textarea";
 import ApiKeyInput from "./_components/api_key";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Provider = {
   id: string;
@@ -77,6 +78,7 @@ const initialProviders: Provider[] = [
 ];
 
 export default function NotificationProvidersPage() {
+  const router = useRouter();
   const [providers, setProviders] = useState<Provider[]>(initialProviders);
   const [filteredProviders, setFilteredProviders] =
     useState<Provider[]>(providers);
@@ -130,6 +132,7 @@ export default function NotificationProvidersPage() {
       setSelectedProvider({ ...selectedProvider, apiKey: newApiKey });
     }
   };
+
   const formatJSON = (json: string) => {
     try {
       return JSON.stringify(JSON.parse(json), null, 2);
@@ -137,17 +140,16 @@ export default function NotificationProvidersPage() {
       return json;
     }
   };
+
   const handleSecretChange = (value: string) => {
     if (selectedProvider) {
       try {
-        // Attempt to parse and re-stringify to validate JSON
         JSON.parse(value);
         setSelectedProvider({
           ...selectedProvider,
           secret: value,
         });
       } catch (e) {
-        // If it's not valid JSON, just set the value as is
         setSelectedProvider({
           ...selectedProvider,
           secret: value,
@@ -155,6 +157,7 @@ export default function NotificationProvidersPage() {
       }
     }
   };
+
   return (
     <PageContainer scrollable>
       <div className="w-full max-w-full min-w-full">
@@ -176,6 +179,10 @@ export default function NotificationProvidersPage() {
               <SelectItem value="custom">Custom WebPush</SelectItem>
             </SelectContent>
           </Select>
+          <Button onClick={() => router.push("/providers/create")}>
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Add Provider
+          </Button>
         </div>
 
         <div className="overflow-x-auto w-full">
@@ -194,7 +201,7 @@ export default function NotificationProvidersPage() {
               {filteredProviders.map((provider) => (
                 <TableRow key={provider.id}>
                   <TableCell>{provider.alias}</TableCell>
-                  <TableCell className=" flex">
+                  <TableCell className="flex">
                     <ApiKeyInput apiKey={provider.apiKey}></ApiKeyInput>
                   </TableCell>
                   <TableCell>{provider.provider}</TableCell>
@@ -276,6 +283,7 @@ export default function NotificationProvidersPage() {
                     <SelectTrigger className="col-span-3">
                       <SelectValue placeholder="Select provider" />
                     </SelectTrigger>
+
                     <SelectContent>
                       <SelectItem value="onesignal">OneSignal</SelectItem>
                       <SelectItem value="firebase">Firebase</SelectItem>
