@@ -3,14 +3,9 @@ import * as React from "react";
 import {
   AudioWaveform,
   BookOpen,
-  Bot,
+  MessageCircle,
   Command,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -61,6 +56,21 @@ const data = {
         {
           title: "Add New",
           url: "/providers/create",
+        },
+      ],
+    },
+    {
+      title: "Message",
+      url: "/message",
+      icon: MessageCircle,
+      items: [
+        {
+          title: "List",
+          url: "/message",
+        },
+        {
+          title: "Add New",
+          url: "/message/create",
         },
       ],
     },
