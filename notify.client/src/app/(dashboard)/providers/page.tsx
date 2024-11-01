@@ -25,7 +25,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Save, RefreshCw, PlusCircle } from "lucide-react";
+import { Save, RefreshCw, PlusCircle, Search } from "lucide-react";
 import { CalendarDateRangePicker } from "@/components/date-range-picker";
 import { addDays, parseISO } from "date-fns";
 import { DateRange } from "react-day-picker";
@@ -92,6 +92,9 @@ export default function NotificationProvidersPage() {
   });
   const [selectedProviderType, setSelectedProviderType] =
     useState<string>("all");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   useEffect(() => {
     const filtered = providers.filter((provider) => {
@@ -103,10 +106,14 @@ export default function NotificationProvidersPage() {
       const matchesProviderType =
         selectedProviderType === "all" ||
         provider.provider === selectedProviderType;
-      return isInDateRange && matchesProviderType;
+      const matchesSearch =
+        provider.alias.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        provider.apiKey.toLowerCase().includes(searchTerm.toLowerCase());
+      return isInDateRange && matchesProviderType && matchesSearch;
     });
     setFilteredProviders(filtered);
-  }, [providers, dateRange, selectedProviderType]);
+    setCurrentPage(1);
+  }, [providers, dateRange, selectedProviderType, searchTerm]);
 
   const handleViewDetails = (provider: Provider) => {
     setSelectedProvider(provider);
@@ -158,6 +165,15 @@ export default function NotificationProvidersPage() {
     }
   };
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProviders.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+
   return (
     <PageContainer scrollable>
       <div className="w-full max-w-full min-w-full">
@@ -179,6 +195,19 @@ export default function NotificationProvidersPage() {
               <SelectItem value="custom">Custom WebPush</SelectItem>
             </SelectContent>
           </Select>
+          <div className="relative">
+            <Input
+              type="text"
+              placeholder="Search providers..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-10"
+            />
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              size={18}
+            />
+          </div>
           <Button onClick={() => router.push("/providers/create")}>
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Provider
@@ -198,7 +227,7 @@ export default function NotificationProvidersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredProviders.map((provider) => (
+              {currentItems.map((provider) => (
                 <TableRow key={provider.id}>
                   <TableCell>{provider.alias}</TableCell>
                   <TableCell className="flex">
@@ -221,6 +250,40 @@ export default function NotificationProvidersPage() {
               ))}
             </TableBody>
           </Table>
+        </div>
+
+        <div className="mt-4 flex justify-between items-center">
+          <div>
+            <Select
+              value={itemsPerPage.toString()}
+              onValueChange={(value) => setItemsPerPage(Number(value))}
+            >
+              <SelectTrigger className="w-[100px]">
+                <SelectValue placeholder="Items per page" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="5">5</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            {Array.from(
+              { length: Math.ceil(filteredProviders.length / itemsPerPage) },
+              (_, i) => (
+                <Button
+                  key={i}
+                  variant={currentPage === i + 1 ? "default" : "outline"}
+                  className="mx-1"
+                  onClick={() => paginate(i + 1)}
+                >
+                  {i + 1}
+                </Button>
+              )
+            )}
+          </div>
         </div>
 
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>

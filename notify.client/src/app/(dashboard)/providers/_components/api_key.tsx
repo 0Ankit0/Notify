@@ -9,7 +9,10 @@ interface ApiKeyInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ apiKey, ...props }) => {
   const [isSecretVisible, setIsSecretVisible] = useState(false);
-
+  const [apiKeyVal, setApiKey] = useState(apiKey);
+  const handleApiKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setApiKey(event.target.value);
+  };
   const toggleSecretVisibility = () => {
     setIsSecretVisible((prev) => !prev);
   };
@@ -18,7 +21,8 @@ const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ apiKey, ...props }) => {
     <div className="flex">
       <Input
         type={isSecretVisible ? "text" : "password"}
-        value={apiKey}
+        value={apiKeyVal}
+        onChange={handleApiKeyChange}
         {...props}
       />
       <Button variant="outline" size="icon" onClick={toggleSecretVisibility}>
