@@ -12,7 +12,6 @@ namespace Notify.Server.Data.Users
         {
             UserTokens = new HashSet<UserToken>();
             Messages = new HashSet<Message>();
-            ProviderUserTokens = new HashSet<ProviderUserToken>();
         }
 
         [Key]
@@ -29,6 +28,5 @@ namespace Notify.Server.Data.Users
         // Navigation properties
         public virtual ICollection<UserToken> UserTokens { get; set; }
         public virtual ICollection<Message> Messages { get; set; }
-        public virtual ICollection<ProviderUserToken> ProviderUserTokens { get; set; }
     }
 }

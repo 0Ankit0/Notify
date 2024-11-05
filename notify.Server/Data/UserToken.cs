@@ -27,5 +27,6 @@ namespace Notify.Server.Data.Users
 
         [Required]
         public DateTime CreatedAt { get; set; }
+
     }
 }

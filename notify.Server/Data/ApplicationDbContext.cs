@@ -8,7 +8,6 @@ namespace Notify.Server.Data
     public class ApplicationDbContext : DbContext
     {
         public DbSet<ProviderMaster> ProviderMasters { get; set; }
-        public DbSet<ProviderUserToken> ProviderUserTokens { get; set; }
         public DbSet<UserMaster> UserMasters { get; set; }
         public DbSet<UserToken> UserTokens { get; set; }
         public DbSet<Message> Messages { get; set; }
@@ -23,21 +22,18 @@ namespace Notify.Server.Data
             base.OnModelCreating(modelBuilder);
 
             // Configure relationships and keys if necessary
-            modelBuilder.Entity<ProviderMaster>()
-                .HasMany(p => p.ProviderUserTokens)
-                .WithOne(put => put.Provider)
-                .HasForeignKey(put => put.ProviderId);
-
-            modelBuilder.Entity<UserMaster>()
-                .HasMany(u => u.ProviderUserTokens)
-                .WithOne(put => put.UserMaster)
-                .HasForeignKey(put => put.UserId);
 
             modelBuilder.Entity<UserMaster>()
                 .HasMany(u => u.UserTokens)
                 .WithOne(ut => ut.UserMaster)
                 .HasForeignKey(ut => ut.UserId);
 
+            modelBuilder.Entity<UserToken>()
+                .HasOne(ut => ut.UserMaster)
+                .WithMany(u => u.UserTokens)
+                .HasForeignKey(ut => ut.UserId);
+            
+         
             modelBuilder.Entity<UserMaster>()
                 .HasMany(u => u.Messages)
                 .WithOne(m => m.UserMaster)
