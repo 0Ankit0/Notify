@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using notify.Server.Classes;
 using Notify.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Register CustomMethods as a service
+builder.Services.AddScoped<ICustomMethods, CustomMethods>();
 
 // Configure the DbContext with a connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
