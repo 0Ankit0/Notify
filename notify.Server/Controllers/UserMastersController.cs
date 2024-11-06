@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using notify.Server.Classes;
+using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Users;
 
@@ -15,22 +17,35 @@ namespace notify.Server.Controllers
     public class UserMastersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly CustomMethods _customMethods;
 
-        public UserMastersController(ApplicationDbContext context)
+        public UserMastersController(ApplicationDbContext context,CustomMethods customMethods)
         {
             _context = context;
+            _customMethods = customMethods;
         }
 
         // GET: api/UserMasters
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserMaster>>> GetUserMasters()
+        public async Task<ActionResult<IEnumerable<UserModel>>> GetUserMasters()
         {
-            return await _context.UserMasters.ToListAsync();
+            return await _context.UserMasters.Select(u => new UserModel
+            {
+                UserId = u.UserId,
+                UserName = u.UserName,
+                UserEmail = u.UserEmail,
+                Address = u.Address,
+                Phone = u.Phone,
+                GUID = u.GUID,
+                CreatedAt = u.CreatedAt,
+                Active = u.Active
+            }).ToListAsync();
         }
+
 
         // GET: api/UserMasters/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserMaster>> GetUserMaster(int id)
+        public async Task<ActionResult<UserModel>> GetUserMaster(int id)
         {
             var userMaster = await _context.UserMasters.FindAsync(id);
 
@@ -38,19 +53,26 @@ namespace notify.Server.Controllers
             {
                 return NotFound();
             }
+            UserModel userModel = new UserModel();
+            _customMethods.MapProperties(userMaster, userModel);
 
-            return userMaster;
+            return userModel;
         }
 
         // PUT: api/UserMasters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutUserMaster(int id, UserMaster userMaster)
+        [HttpPut]
+        public async Task<IActionResult> PutUserMaster(UserModel userModel)
         {
-            if (id != userMaster.UserId)
+            int id = userModel.UserId ?? 0;
+            if (id == 0)
             {
                 return BadRequest();
             }
+            UserMaster userMaster = new UserMaster();
+            _customMethods.MapProperties(userModel, userMaster);
+
+            //_context.UserMasters.Update(userMaster);
 
             _context.Entry(userMaster).State = EntityState.Modified;
 
@@ -76,8 +98,10 @@ namespace notify.Server.Controllers
         // POST: api/UserMasters
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserMaster>> PostUserMaster(UserMaster userMaster)
+        public async Task<ActionResult<UserMaster>> PostUserMaster(UserModel userModel)
         {
+            UserMaster userMaster = new UserMaster();
+            _customMethods.MapProperties(userModel, userMaster);
             _context.UserMasters.Add(userMaster);
             await _context.SaveChangesAsync();
 
