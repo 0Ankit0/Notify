@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using notify.Server.Classes;
+using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Messages;
 
@@ -15,22 +17,32 @@ namespace notify.Server.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly CustomMethods _customMethods;
 
-        public MessagesController(ApplicationDbContext context)
+        public MessagesController(ApplicationDbContext context,CustomMethods customMethods)
         {
             _context = context;
+            _customMethods = customMethods;
         }
 
         // GET: api/Messages
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Message>>> GetMessages()
+        public async Task<ActionResult<IEnumerable<MessageModel>>> GetMessages()
         {
-            return await _context.Messages.ToListAsync();
+            return await _context.Messages.Select(m => new MessageModel
+            {
+                Id = m.Id,
+                Receiver = m.Receiver,
+                Content = m.Content,
+                Provider = m.Provider.ProviderName,
+                Status = m.Status.ToString(),
+                CreatedAt = m.CreatedAt
+            }).ToListAsync();
         }
 
         // GET: api/Messages/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Message>> GetMessage(string id)
+        public async Task<ActionResult<MessageModel>> GetMessage(string id)
         {
             var message = await _context.Messages.FindAsync(id);
 
@@ -38,19 +50,23 @@ namespace notify.Server.Controllers
             {
                 return NotFound();
             }
-
-            return message;
+            MessageModel messageModel = new MessageModel();
+            _customMethods.MapProperties(message, messageModel);
+            return messageModel;
         }
 
         // PUT: api/Messages/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMessage(string id, Message message)
+        [HttpPut()]
+        public async Task<IActionResult> PutMessage(MessageModel messageModel)
         {
-            if (id != message.Id)
+            string id = messageModel.Id;
+            if (String.IsNullOrEmpty(id))
             {
                 return BadRequest();
             }
+            Message message = new Message();
+            _customMethods.MapProperties(messageModel, message);
 
             _context.Entry(message).State = EntityState.Modified;
 
@@ -76,8 +92,10 @@ namespace notify.Server.Controllers
         // POST: api/Messages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Message>> PostMessage(Message message)
+        public async Task<ActionResult<MessageModel>> PostMessage(MessageModel messageModel)
         {
+            Message message = new Message();
+            _customMethods.MapProperties(messageModel, message);
             _context.Messages.Add(message);
             try
             {
@@ -95,7 +113,7 @@ namespace notify.Server.Controllers
                 }
             }
 
-            return CreatedAtAction("GetMessage", new { id = message.Id }, message);
+            return CreatedAtAction("GetMessage", new { id = message.Id }, messageModel);
         }
 
         // DELETE: api/Messages/5

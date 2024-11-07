@@ -10,9 +10,12 @@ namespace Notify.Server.Data.Messages
     {
         [Key]
         public string Id { get; set; }
-        public required string Receiver { get; set; }
-        public required string Content { get; set; }
-        public required ProviderMaster Provider { get; set; }
+        [Required(ErrorMessage ="Please provide a valid receiver")]
+        public string Receiver { get; set; }
+        [Required(ErrorMessage ="Please provide a valid message")]
+        public string Content { get; set; }
+        [Required]
+        public ProviderMaster Provider { get; set; }
         public MessageStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
 
