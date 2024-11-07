@@ -12,7 +12,8 @@ namespace Notify.Server.Data.Providers
         public int ProviderId { get; set; }
         public string? Alias { get; set; }
         public ProviderEnum Provider { get; set; }
-        public required string Secret { get; set; }
+        [Required(ErrorMessage = "Please provide a valid secret")]
+        public string Secret { get; set; }
         public DateTime CreatedAt { get; set; }
 
         // Computed property to get the provider name from the enum

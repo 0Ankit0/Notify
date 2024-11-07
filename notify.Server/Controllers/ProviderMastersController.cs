@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using notify.Server.Classes;
+using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Providers;
 
@@ -15,22 +17,32 @@ namespace notify.Server.Controllers
     public class ProviderMastersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly CustomMethods _customMethods;
 
-        public ProviderMastersController(ApplicationDbContext context)
+        public ProviderMastersController(ApplicationDbContext context,CustomMethods customMethods)
         {
             _context = context;
+            _customMethods = customMethods;
         }
 
         // GET: api/ProviderMasters
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProviderMaster>>> GetProviderMasters()
+        public async Task<ActionResult<IEnumerable<ProviderModel>>> GetProviderMasters()
         {
-            return await _context.ProviderMasters.ToListAsync();
+            return await _context.ProviderMasters.Select(p => new ProviderModel
+            {
+                ProviderId = p.ProviderId,
+                Alias = p.Alias,
+                Provider = p.Provider,
+                Secret = p.Secret,
+                CreatedAt = p.CreatedAt
+            }).ToListAsync();
+            
         }
 
         // GET: api/ProviderMasters/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProviderMaster>> GetProviderMaster(int id)
+        public async Task<ActionResult<ProviderModel>> GetProviderMaster(int id)
         {
             var providerMaster = await _context.ProviderMasters.FindAsync(id);
 
@@ -38,20 +50,24 @@ namespace notify.Server.Controllers
             {
                 return NotFound();
             }
+            ProviderModel providerModel = new ProviderModel();
+            _customMethods.MapProperties(providerMaster, providerModel);
 
-            return providerMaster;
+            return providerModel;
         }
 
         // PUT: api/ProviderMasters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProviderMaster(int id, ProviderMaster providerMaster)
+        [HttpPut()]
+        public async Task<IActionResult> PutProviderMaster(ProviderModel providerModel)
         {
-            if (id != providerMaster.ProviderId)
+            int id = providerModel.ProviderId ?? 0;
+            if (id ==0)
             {
                 return BadRequest();
             }
-
+            ProviderMaster providerMaster = new ProviderMaster();
+            _customMethods.MapProperties(providerModel, providerMaster);
             _context.Entry(providerMaster).State = EntityState.Modified;
 
             try
@@ -76,12 +92,15 @@ namespace notify.Server.Controllers
         // POST: api/ProviderMasters
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProviderMaster>> PostProviderMaster(ProviderMaster providerMaster)
+        public async Task<ActionResult<ProviderModel>> PostProviderMaster(ProviderModel providerModel)
         {
+            ProviderMaster providerMaster = new ProviderMaster();
+            _customMethods.MapProperties(providerModel, providerMaster);
+
             _context.ProviderMasters.Add(providerMaster);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProviderMaster", new { id = providerMaster.ProviderId }, providerMaster);
+            return CreatedAtAction("GetProviderMaster", new { id = providerMaster.ProviderId }, providerModel);
         }
 
         // DELETE: api/ProviderMasters/5
