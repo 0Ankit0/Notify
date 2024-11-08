@@ -1,6 +1,6 @@
 ﻿namespace notify.Server.Classes
 {
-    interface ICustomMethods
+    public interface ICustomMethods
     {
         void MapProperties<TSource, TDestination>(TSource source, TDestination destination) where TSource : class where TDestination : class;
         List<TDestination> MapList<TSource, TDestination>(List<TSource> sourceList) where TSource : class where TDestination : class, new();

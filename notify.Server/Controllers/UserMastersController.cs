@@ -17,9 +17,9 @@ namespace notify.Server.Controllers
     public class UserMastersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly CustomMethods _customMethods;
+        private readonly ICustomMethods _customMethods;
 
-        public UserMastersController(ApplicationDbContext context,CustomMethods customMethods)
+        public UserMastersController(ApplicationDbContext context,ICustomMethods customMethods)
         {
             _context = context;
             _customMethods = customMethods;
@@ -36,9 +36,7 @@ namespace notify.Server.Controllers
                 UserEmail = u.UserEmail,
                 Address = u.Address,
                 Phone = u.Phone,
-                GUID = u.GUID,
                 CreatedAt = u.CreatedAt,
-                Active = u.Active
             }).ToListAsync();
         }
 
@@ -70,7 +68,10 @@ namespace notify.Server.Controllers
                 return BadRequest();
             }
             UserMaster userMaster = new UserMaster();
-            _customMethods.MapProperties(userModel, userMaster);
+            userMaster.Address = userModel.Address;
+            userMaster.UserName = userModel.UserName;
+            userMaster.Password = userModel.Password;
+            //_customMethods.MapProperties(userModel, userMaster);
 
             //_context.UserMasters.Update(userMaster);
 
@@ -102,6 +103,7 @@ namespace notify.Server.Controllers
         {
             UserMaster userMaster = new UserMaster();
             _customMethods.MapProperties(userModel, userMaster);
+            userMaster.GUID = Guid.NewGuid().ToString();
             _context.UserMasters.Add(userMaster);
             await _context.SaveChangesAsync();
 
