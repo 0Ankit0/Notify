@@ -27,12 +27,13 @@ namespace notify.Server.Controllers
 
         // GET: api/UserTokens
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserTokenModel>>> GetUserTokens()
+        public async Task<ActionResult<IEnumerable<UserTokenModel>>> Get()
         {
             return await _context.UserTokens.Select(ut => new UserTokenModel
             {
                 Id = ut.Id,
                 UserId = ut.UserId,
+                ProviderId = ut.ProviderId,
                 Token = ut.Token,
                 CreatedAt = ut.CreatedAt
             }).ToListAsync();
@@ -40,7 +41,7 @@ namespace notify.Server.Controllers
 
         // GET: api/UserTokens/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserTokenModel>> GetUserToken(int id)
+        public async Task<ActionResult<UserTokenModel>> Get(int id)
         {
             var userToken = await _context.UserTokens.FindAsync(id);
 
@@ -57,16 +58,15 @@ namespace notify.Server.Controllers
         // PUT: api/UserTokens/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut()]
-        public async Task<IActionResult> PutUserToken(UserTokenModel userTokenModel)
+        public async Task<IActionResult> Put(UserTokenModel userTokenModel)
         {
             int id = userTokenModel.Id ?? 0;
-            if (id ==0)
+            if (id ==0 || string.IsNullOrEmpty(userTokenModel.Token))
             {
                 return BadRequest();
             }
             UserToken userToken = new UserToken();
-            _customMethods.MapProperties(userTokenModel, userToken);
-
+            userToken.Token = userTokenModel.Token;
             _context.Entry(userToken).State = EntityState.Modified;
 
             try
@@ -91,7 +91,7 @@ namespace notify.Server.Controllers
         // POST: api/UserTokens
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserTokenModel>> PostUserToken(UserTokenModel userTokenModel)
+        public async Task<ActionResult<UserTokenModel>> Post(UserTokenModel userTokenModel)
         {
             UserToken userToken = new UserToken();
             _customMethods.MapProperties(userTokenModel, userToken);
@@ -103,7 +103,7 @@ namespace notify.Server.Controllers
 
         // DELETE: api/UserTokens/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserToken(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var userToken = await _context.UserTokens.FindAsync(id);
             if (userToken == null)
