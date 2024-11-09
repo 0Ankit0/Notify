@@ -27,7 +27,7 @@ namespace notify.Server.Controllers
 
         // GET: api/UserMasters
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserModel>>> GetUserMasters()
+        public async Task<ActionResult<IEnumerable<UserModel>>> Get()
         {
             return await _context.UserMasters.Select(u => new UserModel
             {
@@ -43,7 +43,7 @@ namespace notify.Server.Controllers
 
         // GET: api/UserMasters/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserModel>> GetUserMaster(int id)
+        public async Task<ActionResult<UserModel>> Get(int id)
         {
             var userMaster = await _context.UserMasters.FindAsync(id);
 
@@ -60,7 +60,7 @@ namespace notify.Server.Controllers
         // PUT: api/UserMasters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
-        public async Task<IActionResult> PutUserMaster(UserModel userModel)
+        public async Task<IActionResult> Put(UserModel userModel)
         {
             int id = userModel.UserId ?? 0;
             if (id == 0)
@@ -99,7 +99,7 @@ namespace notify.Server.Controllers
         // POST: api/UserMasters
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<UserMaster>> PostUserMaster(UserModel userModel)
+        public async Task<ActionResult<UserMaster>> Post(UserModel userModel)
         {
             UserMaster userMaster = new UserMaster();
             _customMethods.MapProperties(userModel, userMaster);
@@ -112,7 +112,7 @@ namespace notify.Server.Controllers
 
         // DELETE: api/UserMasters/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteUserMaster(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var userMaster = await _context.UserMasters.FindAsync(id);
             if (userMaster == null)
