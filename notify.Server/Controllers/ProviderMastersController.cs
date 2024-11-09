@@ -27,7 +27,7 @@ namespace notify.Server.Controllers
 
         // GET: api/ProviderMasters
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProviderModel>>> GetProviderMasters()
+        public async Task<ActionResult<IEnumerable<ProviderModel>>> Get()
         {
             return await _context.ProviderMasters.Select(p => new ProviderModel
             {
@@ -42,7 +42,7 @@ namespace notify.Server.Controllers
 
         // GET: api/ProviderMasters/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProviderModel>> GetProviderMaster(int id)
+        public async Task<ActionResult<ProviderModel>> Get(int id)
         {
             var providerMaster = await _context.ProviderMasters.FindAsync(id);
 
@@ -58,8 +58,8 @@ namespace notify.Server.Controllers
 
         // PUT: api/ProviderMasters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut()]
-        public async Task<IActionResult> PutProviderMaster(ProviderModel providerModel)
+        [HttpPut]
+        public async Task<IActionResult> Put(ProviderModel providerModel)
         {
             int id = providerModel.ProviderId ?? 0;
             if (id ==0)
@@ -67,7 +67,8 @@ namespace notify.Server.Controllers
                 return BadRequest();
             }
             ProviderMaster providerMaster = new ProviderMaster();
-            _customMethods.MapProperties(providerModel, providerMaster);
+            providerMaster.Alias = providerModel.Alias;
+            providerMaster.Secret = providerModel.Secret;
             _context.Entry(providerMaster).State = EntityState.Modified;
 
             try
@@ -88,11 +89,11 @@ namespace notify.Server.Controllers
 
             return NoContent();
         }
-
+        
         // POST: api/ProviderMasters
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProviderModel>> PostProviderMaster(ProviderModel providerModel)
+        public async Task<ActionResult<ProviderModel>> Post(ProviderModel providerModel)
         {
             ProviderMaster providerMaster = new ProviderMaster();
             _customMethods.MapProperties(providerModel, providerMaster);
@@ -105,7 +106,7 @@ namespace notify.Server.Controllers
 
         // DELETE: api/ProviderMasters/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProviderMaster(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var providerMaster = await _context.ProviderMasters.FindAsync(id);
             if (providerMaster == null)
