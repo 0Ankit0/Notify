@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using notify.Server.Classes;
+using notify.Server.Filters;
 using Notify.Server.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,9 @@ builder.Services.AddSwaggerGen();
 
 // Register CustomMethods as a service
 builder.Services.AddScoped<ICustomMethods, CustomMethods>();
+
+//Add the TokenValidationFilter as a service
+builder.Services.AddScoped<TokenValidationFilter>();
 
 // Configure the DbContext with a connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -33,6 +37,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 
