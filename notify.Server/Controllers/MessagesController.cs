@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using notify.Server.Classes;
+using notify.Server.Filters;
 using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Messages;
@@ -27,7 +28,7 @@ namespace notify.Server.Controllers
 
         // GET: api/Messages
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MessageModel>>> GetMessages()
+        public async Task<ActionResult<IEnumerable<MessageModel>>> Get()
         {
             return await _context.Messages.Select(m => new MessageModel
             {
@@ -42,7 +43,7 @@ namespace notify.Server.Controllers
 
         // GET: api/Messages/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<MessageModel>> GetMessage(string id)
+        public async Task<ActionResult<MessageModel>> Get(string id)
         {
             var message = await _context.Messages.FindAsync(id);
 
@@ -58,7 +59,7 @@ namespace notify.Server.Controllers
         // PUT: api/Messages/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut()]
-        public async Task<IActionResult> PutMessage(MessageModel messageModel)
+        public async Task<IActionResult> Put(MessageModel messageModel)
         {
             string id = messageModel.Id;
             if (String.IsNullOrEmpty(id))
@@ -66,7 +67,7 @@ namespace notify.Server.Controllers
                 return BadRequest();
             }
             Message message = new Message();
-            _customMethods.MapProperties(messageModel, message);
+            message.Status = Enum.Parse<MessageStatus>(messageModel.Status);
 
             _context.Entry(message).State = EntityState.Modified;
 
@@ -92,10 +93,12 @@ namespace notify.Server.Controllers
         // POST: api/Messages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<MessageModel>> PostMessage(MessageModel messageModel)
+        [ServiceFilter(typeof(TokenValidationFilter))]
+        public async Task<ActionResult<MessageModel>> Post(MessageModel messageModel)
         {
             Message message = new Message();
             _customMethods.MapProperties(messageModel, message);
+            message.Status = MessageStatus.Pending;
             _context.Messages.Add(message);
             try
             {
@@ -118,7 +121,7 @@ namespace notify.Server.Controllers
 
         // DELETE: api/Messages/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMessage(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var message = await _context.Messages.FindAsync(id);
             if (message == null)
