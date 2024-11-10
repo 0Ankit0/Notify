@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/loading-screen";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSession } from "next-auth/react";
+require('dotenv').config();
 
 export default function LoginPage() {
   const { status } = useSession();
