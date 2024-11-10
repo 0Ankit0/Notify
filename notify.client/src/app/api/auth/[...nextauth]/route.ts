@@ -15,15 +15,22 @@ const handler = NextAuth({
 
         try {
           // Validate the credentials using the loginSchema
-          const validatedCredentials = loginSchema.parse(credentials)
+            const validatedCredentials = loginSchema.parse(credentials)
+            const apiUrl = process.env.NOTIFY_API_URL || "";
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(validatedCredentials)
+            });
 
-          // Here you would typically check these credentials against your database
-          // For this example, we'll just check for a hardcoded user
-          if (validatedCredentials.username === "admin" && validatedCredentials.password === "admin123") {
-            return { id: "1", name: validatedCredentials.username, email: "user@example.com" }
-          } else {
-            return null
-          }
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            } else {
+                return null;
+            }
         } catch (error) {
           console.error("Validation error:", error)
           return null
