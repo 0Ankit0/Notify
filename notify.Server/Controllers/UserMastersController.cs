@@ -110,6 +110,13 @@ namespace notify.Server.Controllers
             return CreatedAtAction("GetUserMaster", new { id = userMaster.UserId }, userMaster);
         }
 
+          [HttpPost]
+        public async Task<ActionResult<UserMaster>> Login(LoginModel userModel)
+        {
+            var user = _context.UserMasters.Where(u => u.UserName == userModel.username).FirstOrDefault();
+            return user;
+        }
+
         // DELETE: api/UserMasters/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)

@@ -12,7 +12,7 @@
     }
     public class LoginModel
     {
-        public required string UserEmail { get; set; }
-        public required string Password { get; set; }
+        public required string username { get; set; }
+        public required string password { get; set; }
     }
 }
