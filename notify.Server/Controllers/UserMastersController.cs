@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using notify.Server.Classes;
@@ -12,7 +14,7 @@ using Notify.Server.Data.Users;
 
 namespace notify.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/User")]
     [ApiController]
     public class UserMastersController : ControllerBase
     {
@@ -110,11 +112,22 @@ namespace notify.Server.Controllers
             return CreatedAtAction("GetUserMaster", new { id = userMaster.UserId }, userMaster);
         }
 
-          [HttpPost]
-        public async Task<ActionResult<UserMaster>> Login(LoginModel userModel)
+        [HttpPost("login")]
+        public async Task<ActionResult<UserModel>> Login(LoginModel loginModel)
         {
-            var user = _context.UserMasters.Where(u => u.UserName == userModel.username).FirstOrDefault();
-            return user;
+            var user = await _context.UserMasters
+                .Where(u => u.UserName == loginModel.username && u.Password == loginModel.password)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            UserModel userModel = new UserModel();
+            _customMethods.MapProperties(user, userModel);
+            userModel.Password = null;
+            return Ok(userModel);
         }
 
         // DELETE: api/UserMasters/5
