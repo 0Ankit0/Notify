@@ -12,7 +12,7 @@ using Notify.Server.Data.Providers;
 
 namespace notify.Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Providers/[action]")]
     [ApiController]
     public class ProviderMastersController : ControllerBase
     {

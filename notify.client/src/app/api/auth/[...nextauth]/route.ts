@@ -1,28 +1,23 @@
-import NextAuth from "next-auth"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { loginSchema } from "@/utils/loginSchema"
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { loginSchema } from "@/utils/loginSchema";
+
 const handler = NextAuth({
-    debug: true,
     providers: [
         CredentialsProvider({
             name: "Credentials",
             credentials: {
-                username: { label: "Username", type: "text" },
-                password: { label: "Password", type: "text" }
+                username: { label: "username", type: "text" },
+                password: { label: "password", type: "password" },
             },
             async authorize(credentials) {
-                console.log("Authorize function called");
-                if (!credentials) {
-                    console.log("No credentials provided");
-                    return null;
-                }
+                if (!credentials) return null;
 
                 try {
                     // Validate the credentials using the loginSchema
                     const validatedCredentials = loginSchema.parse(credentials);
-                    console.log("Validated credentials:", validatedCredentials);
-
-                    var apiUrl = process.env.NOTIFY_API_URL || "";
+                    // Static check for hardcoded user credentials
+                    var apiUrl = process.env.NOTIFY_API_URL || "http://localhost:44320/api";
                     apiUrl += "/User/login";
                     const response = await fetch(apiUrl, {
                         method: "POST",
@@ -34,14 +29,12 @@ const handler = NextAuth({
 
                     if (response.ok) {
                         const data = await response.json();
-                        console.log("Login successful:", data);
-                        return data;
+                        return { id: data.userId, name: data.userName, email: data.userEmail };
                     } else {
-                        console.log("Login failed with status:", response.status);
                         return null;
                     }
                 } catch (error) {
-                    console.error("Validation error:", error);
+                    console.error("Authorization error:", error);
                     return null;
                 }
             },
@@ -49,22 +42,27 @@ const handler = NextAuth({
     ],
     pages: {
         signIn: "/",
+        error: "/auth/error",
     },
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
-                token.email = user.email;
+                token.id = user.id;
                 token.name = user.name;
+                token.email = user.email;
             }
             return token;
         },
         async session({ session, token }) {
-            if (session.user) {
-                session.user.email = token.email;
-                session.user.name = token.name;
-            }
+            session.user = {
+                name: token.name,
+                email: token.email,
+            };
             return session;
         },
+    },
+    session: {
+        strategy: "jwt", // Use JWT strategy for credentials provider
     },
 });
 
