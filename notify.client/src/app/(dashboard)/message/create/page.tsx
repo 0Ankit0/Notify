@@ -73,9 +73,9 @@ export default function CreateMessagePage() {
         <h1 className="text-2xl font-bold mb-6">Create New Message</h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="receiver">Receiver</Label>
+            <Label htmlFor="Receiver">Receiver</Label>
             <Input
-              id="receiver"
+              id="Receiver"
               type="text"
               placeholder="Enter receiver's email or ID"
               value={receiver}
@@ -83,9 +83,9 @@ export default function CreateMessagePage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="message">Message</Label>
+            <Label htmlFor="Message">Message</Label>
             <Textarea
-              id="message"
+              id="Message"
               placeholder="Type your message here"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -93,12 +93,12 @@ export default function CreateMessagePage() {
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="provider">Provider</Label>
+            <Label htmlFor="Provider">Provider</Label>
             <Select
               value={provider}
               onValueChange={(value) => setProvider(value as Provider)}
             >
-              <SelectTrigger id="provider">
+              <SelectTrigger id="Provider">
                 <SelectValue placeholder="Select a provider" />
               </SelectTrigger>
               <SelectContent>

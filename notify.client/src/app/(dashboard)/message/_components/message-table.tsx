@@ -31,12 +31,12 @@ const MessageTable = ({ messages, onViewDetails }: MessageTableProps) => {
         </TableHeader>
         <TableBody>
           {messages.map((message) => (
-            <TableRow key={message.id}>
-              <TableCell>{message.receiver}</TableCell>
-              <TableCell>{message.content}</TableCell>
-              <TableCell>{message.provider}</TableCell>
-              <TableCell>{message.status}</TableCell>
-              <TableCell>{message.createdAt.toLocaleDateString()}</TableCell>
+            <TableRow key={message.Id}>
+              <TableCell>{message.Receiver}</TableCell>
+              <TableCell>{message.Content}</TableCell>
+              <TableCell>{message.Provider}</TableCell>
+              <TableCell>{message.Status}</TableCell>
+              <TableCell>{message.CreatedAt.toLocaleDateString()}</TableCell>
               <TableCell>
                 <Button
                   variant="outline"

@@ -47,32 +47,32 @@ const MessageDetailsModal = ({
         {currentMessage && (
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="receiver" className="text-right">
+              <Label htmlFor="Receiver" className="text-right">
                 Receiver
               </Label>
               <Input
-                id="receiver"
-                value={currentMessage.receiver}
+                id="Receiver"
+                value={currentMessage.Receiver}
                 onChange={(e) =>
                   setCurrentMessage({
                     ...currentMessage,
-                    receiver: e.target.value,
+                    Receiver: e.target.value,
                   })
                 }
                 className="col-span-3"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="content" className="text-right">
+              <Label htmlFor="Content" className="text-right">
                 Message
               </Label>
               <Textarea
-                id="content"
-                value={currentMessage.content}
+                id="Content"
+                value={currentMessage.Content}
                 onChange={(e) =>
                   setCurrentMessage({
                     ...currentMessage,
-                    content: e.target.value,
+                    Content: e.target.value,
                   })
                 }
                 className="col-span-3"
@@ -80,28 +80,28 @@ const MessageDetailsModal = ({
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="provider" className="text-right">
+              <Label htmlFor="Provider" className="text-right">
                 Provider
               </Label>
               <Input
-                id="provider"
-                value={currentMessage.provider}
+                id="Provider"
+                value={currentMessage.Provider}
                 onChange={(e) =>
                   setCurrentMessage({
                     ...currentMessage,
-                    provider: e.target.value,
+                    Provider: e.target.value,
                   })
                 }
                 className="col-span-3"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="status" className="text-right">
+              <Label htmlFor="Status" className="text-right">
                 Status
               </Label>
               <Input
-                id="status"
-                value={currentMessage.status}
+                id="Status"
+                value={currentMessage.Status}
                 readOnly
                 className="col-span-3"
               />
