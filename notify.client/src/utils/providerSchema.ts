@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-export const MessageSchema = z.object({
-    id: z.string(),
-    receiver: z.string().min(1, "Receiver is required"),
-    content: z.string().min(1, "Content is required"),
-    provider: z.string().min(1, "Provider is required"),
-    status: z.enum(["sent", "failed", "pending"]),
-    createdAt: z.date()
+export const provider = z.object({
+    Id: z.string(),
+    Alias: z.string().min(1, "Receiver is required"),
+    Token: z.string().min(1, "Receiver is required"),
+    Secret: z.string().min(1, "Content is required"),
+    Provider: z.enum(["onesignal", "firebase", "custom"]),
+    CreatedAt: z.date()
 });
 
-export type Message = z.infer<typeof MessageSchema>;
+export type ProviderSchema = z.infer<typeof provider>;

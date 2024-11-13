@@ -23,7 +23,7 @@ const ProviderTable = ({ providers, onViewDetails }: ProviderTableProps) => {
         <TableHeader>
           <TableRow>
             <TableHead className="w-1/6">Alias</TableHead>
-            <TableHead className="w-1/6">API Key</TableHead>
+            <TableHead className="w-1/6">Token</TableHead>
             <TableHead className="w-1/6">Provider</TableHead>
             <TableHead className="w-1/6">Secret</TableHead>
             <TableHead className="w-1/6">Created At</TableHead>
@@ -32,14 +32,14 @@ const ProviderTable = ({ providers, onViewDetails }: ProviderTableProps) => {
         </TableHeader>
         <TableBody>
           {providers.map((provider) => (
-            <TableRow key={provider.id}>
-              <TableCell>{provider.alias}</TableCell>
+            <TableRow key={provider.Id}>
+              <TableCell>{provider.Alias}</TableCell>
               <TableCell className="flex">
-                <ApiKeyInput apiKey={provider.apiKey}></ApiKeyInput>
+                <ApiKeyInput apiKey={provider.Token}></ApiKeyInput>
               </TableCell>
-              <TableCell>{provider.provider}</TableCell>
+              <TableCell>{provider.Provider}</TableCell>
               <TableCell>{"•".repeat(10)}</TableCell>
-              <TableCell>{provider.createdAt.toLocaleDateString()}</TableCell>
+              <TableCell>{provider.CreatedAt.toLocaleDateString()}</TableCell>
               <TableCell>
                 <Button
                   variant="outline"

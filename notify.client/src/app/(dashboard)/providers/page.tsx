@@ -22,34 +22,34 @@ import { ProviderSchema } from "@/utils/providerSchema";
 
 const initialProviders: ProviderSchema[] = [
   {
-    id: "1",
-    alias: "OneSignal App",
-    apiKey: "os_api_key_123",
-    provider: "onesignal",
+    Id: "1",
+    Alias: "OneSignal App",
+    Token: "os_api_key_123",
+    Provider: "onesignal",
     secret: JSON.stringify({
       app_id: "os_app_id_123",
       api_key: "os_secret_123",
     }),
-    createdAt: new Date("2024-10-15"),
+    CreatedAt: new Date("2024-10-15"),
   },
   {
-    id: "2",
-    alias: "Firebase Project",
-    apiKey: "fb_api_key_456",
-    provider: "firebase",
-    secret: JSON.stringify({
+    Id: "2",
+    Alias: "Firebase Project",
+    Token: "fb_api_key_456",
+    Provider: "firebase",
+    Secret: JSON.stringify({
       project_id: "fb_project_id_456",
       server_key: "fb_secret_456",
     }),
-    createdAt: new Date("2024-10-20"),
+    CreatedAt: new Date("2024-10-20"),
   },
   {
-    id: "3",
-    alias: "Custom WebPush",
-    apiKey: "wp_api_key_789",
-    provider: "custom",
-    secret: JSON.stringify({ custom: "custom_secret_789" }),
-    createdAt: new Date("2024-10-10"),
+    Id: "3",
+    Alias: "Custom WebPush",
+    Token: "wp_api_key_789",
+    Provider: "custom",
+    Secret: JSON.stringify({ custom: "custom_secret_789" }),
+    CreatedAt: new Date("2024-10-10"),
   },
 ];
 

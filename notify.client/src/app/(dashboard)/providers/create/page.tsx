@@ -22,25 +22,17 @@ import {
 import { PlusCircle, RefreshCw } from "lucide-react";
 import PageContainer from "@/components/layout/page-container";
 import ApiKeyInput from "../_components/api_key";
-
-type Provider = {
-  id: string;
-  alias: string;
-  apiKey: string;
-  provider: "onesignal" | "firebase" | "custom";
-  secret: string;
-  createdAt: Date;
-};
+import { ProviderSchema as Provider } from "@/utils/providerSchema";
 
 export default function CreateProviderPage() {
   const router = useRouter();
   const [newProvider, setNewProvider] = useState<
-    Omit<Provider, "id" | "createdAt">
+    Omit<Provider, "Id" | "CreatedAt">
   >({
-    alias: "",
-    apiKey: "",
-    provider: "onesignal",
-    secret: "",
+    Alias: "",
+    Token: "",
+    Provider: "onesignal",
+    Secret: "",
   });
 
   const getSecretHint = (provider: "onesignal" | "firebase" | "custom") => {
@@ -59,18 +51,18 @@ export default function CreateProviderPage() {
     // For now, we'll just simulate adding it and navigate back to the main page
     const newProviderWithId: Provider = {
       ...newProvider,
-      id: `${Date.now()}`,
-      createdAt: new Date(),
+      Id: `${Date.now()}`,
+      CreatedAt: new Date(),
     };
     console.log("New provider added:", newProviderWithId);
     router.push("/providers");
   };
 
   const generateApiKey = () => {
-    const newApiKey = `${newProvider.provider}_${Date.now()}_${Math.random()
+    const newToken = `${newProvider.Provider}_${Date.now()}_${Math.random()
       .toString(36)
       .substr(2, 9)}`;
-    setNewProvider({ ...newProvider, apiKey: newApiKey });
+    setNewProvider({ ...newProvider, Token: newToken });
   };
 
   return (
@@ -85,9 +77,9 @@ export default function CreateProviderPage() {
                   <Label htmlFor="new-alias">Alias</Label>
                   <Input
                     id="new-alias"
-                    value={newProvider.alias}
+                    value={newProvider.Alias}
                     onChange={(e) =>
-                      setNewProvider({ ...newProvider, alias: e.target.value })
+                      setNewProvider({ ...newProvider, Alias: e.target.value })
                     }
                     placeholder="Enter provider alias"
                   />
@@ -104,11 +96,11 @@ export default function CreateProviderPage() {
                 <div>
                   <Label htmlFor="new-provider">Provider</Label>
                   <Select
-                    value={newProvider.provider}
+                    value={newProvider.Provider}
                     onValueChange={(value) =>
                       setNewProvider({
                         ...newProvider,
-                        provider: value as Provider["provider"],
+                        Provider: value as Provider["Provider"],
                       })
                     }
                   >
@@ -132,15 +124,15 @@ export default function CreateProviderPage() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <div>
-                  <Label htmlFor="new-api-key">API Key</Label>
+                  <Label htmlFor="new-api-key">Token</Label>
                   <div className="flex space-x-2">
                     <ApiKeyInput
                       className="w-full"
-                      apiKey={newProvider.apiKey}
+                      apiKey={newProvider.Token}
                       onChange={(e) =>
                         setNewProvider({
                           ...newProvider,
-                          apiKey: e.target.value,
+                          Token: e.target.value,
                         })
                       }
                     />
@@ -169,18 +161,18 @@ export default function CreateProviderPage() {
                   <Label htmlFor="new-secret">Secret</Label>
                   <Textarea
                     id="new-secret"
-                    value={newProvider.secret}
+                    value={newProvider.Secret}
                     onChange={(e) =>
-                      setNewProvider({ ...newProvider, secret: e.target.value })
+                      setNewProvider({ ...newProvider, Secret: e.target.value })
                     }
-                    placeholder={getSecretHint(newProvider.provider)}
+                    placeholder={getSecretHint(newProvider.Provider)}
                     className="font-mono text-sm"
                     rows={5}
                   />
                 </div>
               </TooltipTrigger>
               <TooltipContent>
-                <p>{getSecretHint(newProvider.provider)}</p>
+                <p>{getSecretHint(newProvider.Provider)}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

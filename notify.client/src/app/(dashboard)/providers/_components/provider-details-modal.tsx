@@ -47,12 +47,12 @@ const ProviderDetailsModal = ({
     }
   };
 
-  const generateApiKey = () => {
+  const generateToken = () => {
     if (currentProvider) {
-      const newApiKey = `${
-        currentProvider.provider
-      }_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      setCurrentProvider({ ...currentProvider, apiKey: newApiKey });
+      const newToken = `${
+        currentProvider.Provider
+            }_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        setCurrentProvider({ ...currentProvider, Token: newToken });
     }
   };
 
@@ -62,12 +62,12 @@ const ProviderDetailsModal = ({
         JSON.parse(value);
         setCurrentProvider({
           ...currentProvider,
-          secret: value,
+          Secret: value,
         });
       } catch (e) {
         setCurrentProvider({
           ...currentProvider,
-          secret: value,
+          Secret: value,
         });
       }
     }
@@ -90,36 +90,36 @@ const ProviderDetailsModal = ({
         {currentProvider && (
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="alias" className="text-right">
+              <Label htmlFor="Alias" className="text-right">
                 Alias
               </Label>
               <Input
-                id="alias"
+                id="Alias"
                 value={currentProvider.alias}
                 onChange={(e) =>
                   setCurrentProvider({
                     ...currentProvider,
-                    alias: e.target.value,
+                    Alias: e.target.value,
                   })
                 }
                 className="col-span-3"
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="apiKey" className="text-right">
+              <Label htmlFor="Token" className="text-right">
                 API Key
               </Label>
               <div className="col-span-3 flex">
                 <Input
-                  id="apiKey"
-                  value={currentProvider.apiKey}
+                  id="Token"
+                  value={currentProvider.Token}
                   readOnly
                   className="flex-grow"
                 />
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={generateApiKey}
+                  onClick={generateToken}
                   className="ml-2"
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -127,7 +127,7 @@ const ProviderDetailsModal = ({
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="provider" className="text-right">
+              <Label htmlFor="Provider" className="text-right">
                 Provider
               </Label>
               <Select
@@ -135,7 +135,7 @@ const ProviderDetailsModal = ({
                 onValueChange={(value) =>
                   setCurrentProvider({
                     ...currentProvider,
-                    provider: value as ProviderSchema["provider"],
+                    Provider: value as ProviderSchema["Provider"],
                   })
                 }
               >
@@ -151,13 +151,13 @@ const ProviderDetailsModal = ({
               </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="secret" className="text-right">
+              <Label htmlFor="Secret" className="text-right">
                 Secret
               </Label>
               <div className="col-span-3 flex">
                 <Textarea
-                  id="secret"
-                  value={formatJSON(currentProvider.secret)}
+                  id="Secret"
+                  value={formatJSON(currentProvider.Secret)}
                   onChange={(e) => handleSecretChange(e.target.value)}
                   className="font-mono text-sm"
                   rows={10}
