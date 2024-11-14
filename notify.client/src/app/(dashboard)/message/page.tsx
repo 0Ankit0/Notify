@@ -17,10 +17,10 @@ import { Input } from "@/components/ui/input";
 import useFilter from "@/hooks/use-filter";
 import Pagination from "@/components/table-pagination";
 import MessageTable from "./_components/message-table";
-import { Message } from "@/utils/messageSchema";
+import { MessageSchema } from "@/utils/messageSchema";
 import MessageDetailsModal from "./_components/message-details-modal";
 
-const initialMessages: Message[] = [
+const initialMessages: MessageSchema[] = [
   {
     Id: "1",
     Receiver: "user1@example.com",
@@ -49,7 +49,7 @@ const initialMessages: Message[] = [
 
 export default function MessagePage() {
   const router = useRouter();
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
+    const [messages, setMessages] = useState<MessageSchema[]>(initialMessages);
   const {
     filteredItems: filteredMessages,
     dateRange,
@@ -62,18 +62,18 @@ export default function MessagePage() {
     from: new Date("2024-09-01"),
     to: new Date("2024-10-31"),
   });
-  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+    const [selectedMessage, setSelectedMessage] = useState<MessageSchema | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  const handleViewDetails = (message: Message) => {
+    const handleViewDetails = (message: MessageSchema) => {
     setSelectedMessage(message);
     setIsModalOpen(true);
   };
 
-  const handleSave = (message: Message) => {
-    setMessages(messages.map((m) => (m.id === message.id ? message : m)));
+    const handleSave = (message: MessageSchema) => {
+    setMessages(messages.map((m) => (m.Id === message.Id ? message : m)));
     setIsModalOpen(false);
   };
 
