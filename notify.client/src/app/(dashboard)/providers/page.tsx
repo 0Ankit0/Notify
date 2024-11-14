@@ -26,7 +26,7 @@ const initialProviders: ProviderSchema[] = [
     Alias: "OneSignal App",
     Token: "os_api_key_123",
     Provider: "onesignal",
-    secret: JSON.stringify({
+    Secret: JSON.stringify({
       app_id: "os_app_id_123",
       api_key: "os_secret_123",
     }),
@@ -81,7 +81,7 @@ export default function NotificationProvidersPage() {
   };
 
   const handleSave = (provider: ProviderSchema) => {
-    setProviders(providers.map((p) => (p.id === provider.id ? provider : p)));
+    setProviders(providers.map((p) => (p.Id === provider.Id ? provider : p)));
     setIsModalOpen(false);
   };
 
