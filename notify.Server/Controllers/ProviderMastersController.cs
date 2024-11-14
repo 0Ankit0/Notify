@@ -17,7 +17,7 @@ namespace notify.Server.Controllers
     public class ProviderMastersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly CustomMethods _customMethods;
+        private readonly ICustomMethods _customMethods;
 
         public ProviderMastersController(ApplicationDbContext context,CustomMethods customMethods)
         {

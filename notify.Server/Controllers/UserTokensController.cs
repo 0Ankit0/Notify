@@ -17,7 +17,7 @@ namespace notify.Server.Controllers
     public class UserTokensController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly CustomMethods _customMethods;
+        private readonly ICustomMethods _customMethods;
 
         public UserTokensController(ApplicationDbContext context,CustomMethods customMethods)
         {
