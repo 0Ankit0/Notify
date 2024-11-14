@@ -1,29 +1,29 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LoadingScreen } from "@/components/loading-screen";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function AuthWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { data: session, status } = useSession();
+  const { user, loading } = useAuth();
   const router = useRouter();
 
-    useEffect(() => {
-    if (status === "unauthenticated") {
+  useEffect(() => {
+    if (!loading && !user) {
       router.replace("/");
     }
-  }, [status, router]);
+  }, [user, loading, router]);
 
-  if (status === "loading") {
+  if (loading) {
     return <LoadingScreen />;
   }
 
-  if (!session) {
+  if (!user) {
     return null;
   }
 

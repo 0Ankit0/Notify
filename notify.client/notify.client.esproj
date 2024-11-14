@@ -11,4 +11,7 @@
   <ItemGroup>
     <None Include=".vscode\launch.json" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\app\api\data\" />
+  </ItemGroup>
 </Project>

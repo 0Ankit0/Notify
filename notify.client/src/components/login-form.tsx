@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,11 +18,13 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { User, Lock, LogIn } from "lucide-react";
 import { loginSchema, LoginFormValues } from "@/utils/loginSchema";
 import { LoadingScreen } from "@/components/loading-screen";
+import { useAuthContext } from "@/app/Providers";
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const { login } = useAuthContext();
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -37,13 +38,9 @@ export default function LoginForm() {
     setIsLoading(true);
     setError(null);
     try {
-      const result = await signIn("credentials", {
-        username: data.username,
-        password: data.password,
-        redirect: false,
-      });
+      const success = await login(data.username, data.password);
 
-      if (result?.error) {
+      if (!success) {
         setError("Login failed. Please check your credentials and try again.");
       } else {
         router.push("/dashboard");
