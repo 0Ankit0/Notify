@@ -20,7 +20,7 @@ namespace notify.Server.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ICustomMethods _customMethods;
 
-        public MessagesController(ApplicationDbContext context,CustomMethods customMethods)
+        public MessagesController(ApplicationDbContext context,ICustomMethods customMethods)
         {
             _context = context;
             _customMethods = customMethods;

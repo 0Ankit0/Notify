@@ -19,7 +19,7 @@ namespace notify.Server.Controllers
         private readonly ApplicationDbContext _context;
         private readonly ICustomMethods _customMethods;
 
-        public UserTokensController(ApplicationDbContext context,CustomMethods customMethods)
+        public UserTokensController(ApplicationDbContext context,ICustomMethods customMethods)
         {
             _context = context;
             _customMethods = customMethods;
