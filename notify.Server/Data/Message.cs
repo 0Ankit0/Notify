@@ -18,12 +18,6 @@ namespace Notify.Server.Data.Messages
         public ProviderMaster Provider { get; set; }
         public MessageStatus Status { get; set; }
         public DateTime CreatedAt { get; set; }
-
-        // Foreign key for UserMaster
-        public int UserId { get; set; }
-
-        [ForeignKey("UserId")]
-        public virtual UserMaster UserMaster { get; set; }
     }
 
     public enum MessageStatus

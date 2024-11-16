@@ -10,6 +10,7 @@ using notify.Server.Filters;
 using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Messages;
+using Notify.Server.Services;
 
 namespace notify.Server.Controllers
 {
@@ -19,11 +20,13 @@ namespace notify.Server.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ICustomMethods _customMethods;
+        private readonly INotificationService _notificationService;
 
-        public MessagesController(ApplicationDbContext context,ICustomMethods customMethods)
+        public MessagesController(ApplicationDbContext context, ICustomMethods customMethods, INotificationService notificationService)
         {
             _context = context;
             _customMethods = customMethods;
+            _notificationService = notificationService;
         }
 
         // GET: api/Messages
@@ -58,7 +61,7 @@ namespace notify.Server.Controllers
 
         // PUT: api/Messages/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut()]
+        [HttpPut]
         public async Task<IActionResult> Put(MessageModel messageModel)
         {
             string id = messageModel.Id;
@@ -117,6 +120,36 @@ namespace notify.Server.Controllers
             }
 
             return CreatedAtAction("GetMessage", new { id = message.Id }, messageModel);
+        }
+
+        [HttpPost("send")]
+        public async Task<IActionResult> SendNotification(MessageModel messageModel)
+        {
+            var provider = await _context.Providers.FindAsync(messageModel.Provider);
+            if (provider == null)
+            {
+                return BadRequest("Invalid provider");
+            }
+
+            var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("Invalid user");
+            }
+
+            var user = await _context.Users.FindAsync(int.Parse(userId));
+            if (user == null)
+            {
+                return BadRequest("Invalid user");
+            }
+
+            var result = await _notificationService.SendNotification(provider, user, messageModel);
+            if (!result)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to send notification");
+            }
+
+            return Ok("Notification sent successfully");
         }
 
         // DELETE: api/Messages/5
