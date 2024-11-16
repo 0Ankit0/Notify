@@ -10,7 +10,7 @@ namespace Notify.Server.Services
 {
     public interface INotificationService
     {
-        Task<bool> SendNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel);
+        Task<bool> SendNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel, UserToken userToken);
     }
 
     public class NotificationService : INotificationService
@@ -22,14 +22,14 @@ namespace Notify.Server.Services
             _httpClient = httpClient;
         }
 
-        public async Task<bool> SendNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel)
+        public async Task<bool> SendNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel, UserToken userToken)
         {
             switch (provider.ProviderName.ToLower())
             {
                 case "Firebase":
-                    return await SendFirebaseNotification(provider, user, messageModel);
+                    return await SendFirebaseNotification(provider, user, messageModel,userToken);
                 case "OneSignal":
-                    return await SendOneSignalNotification(provider, user, messageModel);
+                    return await SendOneSignalNotification(provider, user, messageModel, userToken);
                 case "Custom":
                     return await SendCustomNotification(provider, user, messageModel);
                 default:
@@ -37,7 +37,7 @@ namespace Notify.Server.Services
             }
         }
 
-        private async Task<bool> SendFirebaseNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel)
+        private async Task<bool> SendFirebaseNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel,UserToken userToken)
         {
             var firebaseMessage = new
             {
@@ -52,7 +52,7 @@ namespace Notify.Server.Services
             var requestContent = new StringContent(JsonSerializer.Serialize(firebaseMessage), Encoding.UTF8, "application/json");
             var request = new HttpRequestMessage(HttpMethod.Post, "https://fcm.googleapis.com/fcm/send")
             {
-                Headers = { { "Authorization", $"key={provider.Token}" } },
+                Headers = { { "Authorization", $"key={userToken.Token}" } },
                 Content = requestContent
             };
 
@@ -60,11 +60,11 @@ namespace Notify.Server.Services
             return response.IsSuccessStatusCode;
         }
 
-        private async Task<bool> SendOneSignalNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel)
+        private async Task<bool> SendOneSignalNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel, UserToken userToken)
         {
             var oneSignalMessage = new
             {
-                app_id = provider.Token,
+                app_id = userToken.Token,
                 contents = new { en = messageModel.Content },
                 include_player_ids = new[] { messageModel.Receiver }
             };

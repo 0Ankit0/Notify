@@ -18,8 +18,11 @@ builder.Services.AddControllers()
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Instantiate the swagger configuration class
+var swaggerConfig = new SwaggerConfiguration(builder.Configuration);
+
+// Configure services using the instance
+swaggerConfig.ConfigureServices(builder.Services);
 
 // Register CustomMethods as a service
 builder.Services.AddScoped<ICustomMethods, CustomMethods>();

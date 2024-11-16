@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ namespace notify.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class MessagesController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
@@ -96,6 +98,7 @@ namespace notify.Server.Controllers
         // POST: api/Messages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [AllowAnonymous]
         [ServiceFilter(typeof(TokenValidationFilter))]
         public async Task<ActionResult<MessageModel>> Post(MessageModel messageModel)
         {
@@ -125,7 +128,7 @@ namespace notify.Server.Controllers
         [HttpPost("send")]
         public async Task<IActionResult> SendNotification(MessageModel messageModel)
         {
-            var provider = await _context.Providers.FindAsync(messageModel.Provider);
+            var provider = await _context.ProviderMasters.FindAsync(messageModel.Provider);
             if (provider == null)
             {
                 return BadRequest("Invalid provider");
@@ -137,13 +140,19 @@ namespace notify.Server.Controllers
                 return BadRequest("Invalid user");
             }
 
-            var user = await _context.Users.FindAsync(int.Parse(userId));
+            var user = await _context.UserMasters.FindAsync(int.Parse(userId));
             if (user == null)
             {
                 return BadRequest("Invalid user");
             }
 
-            var result = await _notificationService.SendNotification(provider, user, messageModel);
+            var userToken = await _context.UserTokens.FirstOrDefaultAsync(t => t.UserId == user.UserId && t.ProviderId == provider.ProviderId);
+            if (userToken == null)
+            {
+                return BadRequest("User token not found");
+            }
+
+            var result = await _notificationService.SendNotification(provider, user, messageModel,userToken);
             if (!result)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Failed to send notification");

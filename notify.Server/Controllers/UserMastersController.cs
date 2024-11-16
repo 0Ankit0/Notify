@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Policy;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using notify.Server.Classes;
 using notify.Server.Models;
+using Notify.Server.Classes;
 using Notify.Server.Data;
 using Notify.Server.Data.Users;
 
@@ -16,15 +18,18 @@ namespace notify.Server.Controllers
 {
     [Route("api/User/[action]")]
     [ApiController]
+    [Authorize]
     public class UserMastersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
         private readonly ICustomMethods _customMethods;
+        private readonly IJwtAuth _jwtAuth;
 
-        public UserMastersController(ApplicationDbContext context,ICustomMethods customMethods)
+        public UserMastersController(ApplicationDbContext context,ICustomMethods customMethods,IJwtAuth jwtAuth)
         {
             _context = context;
             _customMethods = customMethods;
+            _jwtAuth = jwtAuth;
         }
 
         // GET: api/UserMasters
@@ -113,7 +118,8 @@ namespace notify.Server.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserModel>> Login(LoginModel loginModel)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginModel loginModel)
         {
             var user = await _context.UserMasters
                 .Where(u => u.UserName == loginModel.username && u.Password == loginModel.password)
@@ -124,10 +130,8 @@ namespace notify.Server.Controllers
                 return Unauthorized();
             }
 
-            UserModel userModel = new UserModel();
-            _customMethods.MapProperties(user, userModel);
-            userModel.Password = null;
-            return Ok(userModel);
+            string Token = _jwtAuth.GenerateToken(user.UserName,user.UserId.ToString());
+            return Ok(new {Token});
         }
 
         // DELETE: api/UserMasters/5

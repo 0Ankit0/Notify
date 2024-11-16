@@ -33,13 +33,6 @@ namespace Notify.Server.Data
                 .WithMany(u => u.UserTokens)
                 .HasForeignKey(ut => ut.UserId);
             
-         
-            modelBuilder.Entity<UserMaster>()
-                .HasMany(u => u.Messages)
-                .WithOne(m => m.UserMaster)
-                .HasForeignKey(m => m.UserId);
-
-           
         }
     }
 }
