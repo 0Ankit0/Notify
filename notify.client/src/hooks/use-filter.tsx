@@ -5,8 +5,8 @@ import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 
 type FilterableItem = {
-  createdAt: Date;
-  provider: string;
+  CreatedAt: Date;
+  Provider: string;
 };
 
 const useFilter = <T extends FilterableItem>(
@@ -25,15 +25,15 @@ const useFilter = <T extends FilterableItem>(
     const filtered = items.filter((item) => {
       const isInDateRange =
         dateRange?.from && dateRange?.to
-          ? item.createdAt >= dateRange.from &&
-            item.createdAt <= addDays(dateRange.to, 1)
+          ? item.CreatedAt >= dateRange.from &&
+            item.CreatedAt <= addDays(dateRange.to, 1)
           : true;
       const matchesProviderType =
         selectedProviderType === "all" ||
-        item.provider === selectedProviderType;
-      const matchesSearch = item.provider
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+        item.Provider === selectedProviderType;
+      const matchesSearch = item.Provider.toLowerCase().includes(
+        searchTerm.toLowerCase()
+      );
       return isInDateRange && matchesProviderType && matchesSearch;
     });
     setFilteredItems(filtered);

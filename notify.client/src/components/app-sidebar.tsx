@@ -18,7 +18,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useSession } from "next-auth/react";
+import { getUserSession } from "@/app/api/auth/route";
 // This is sample data.
 const data = {
   user: {
@@ -78,9 +78,9 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session, status } = useSession();
-  data.user.name = session?.user?.name || "admin";
-  data.user.email = session?.user?.email || "test@gmail.com";
+  const user = getUserSession();
+  data.user.name = user?.username || "admin";
+  data.user.email = user?.email || "test@gmail.com";
 
   const [mounted, setMounted] = React.useState(false);
 

@@ -9,7 +9,7 @@ export interface User {
   // Function to make the AJAX call to the server
   export async function loginUser(username: string, password: string): Promise<User | null> {
     try {
-      const response = await fetch('http://localhost:44320/api/User/login', {
+      const response = await fetch('https://localhost:44320/api/User/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

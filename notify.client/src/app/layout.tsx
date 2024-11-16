@@ -1,4 +1,5 @@
 import { AuthProvider } from "./Providers";
+import "./globals.css";
 
 export default function RootLayout({
   children,

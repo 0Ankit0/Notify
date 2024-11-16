@@ -10,14 +10,3 @@ export const Message = z.object({
 });
 
 export type MessageSchema = z.infer<typeof Message>;
-
-export const MessageRes = z.object({
-    Id: z.string(),
-    Receiver: z.string().min(1, "Receiver is required"),
-    Content: z.string().min(1, "Content is required"),
-    Provider: z.string().min(1, "Provider is required"),
-    Status: z.enum(["sent", "failed", "pending"]),
-    CreatedAt: z.date()
-});
-
-export type MessageResponseSchema = z.infer<typeof MessageRes>;

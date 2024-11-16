@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,44 +19,22 @@ import Pagination from "@/components/table-pagination";
 import ProviderDetailsModal from "./_components/provider-details-modal";
 import ProviderTable from "./_components/provider-table";
 import { ProviderSchema } from "@/utils/providerSchema";
-
-const initialProviders: ProviderSchema[] = [
-  {
-    Id: "1",
-    Alias: "OneSignal App",
-    Token: "os_api_key_123",
-    Provider: "onesignal",
-    Secret: JSON.stringify({
-      app_id: "os_app_id_123",
-      api_key: "os_secret_123",
-    }),
-    CreatedAt: new Date("2024-10-15"),
-  },
-  {
-    Id: "2",
-    Alias: "Firebase Project",
-    Token: "fb_api_key_456",
-    Provider: "firebase",
-    Secret: JSON.stringify({
-      project_id: "fb_project_id_456",
-      server_key: "fb_secret_456",
-    }),
-    CreatedAt: new Date("2024-10-20"),
-  },
-  {
-    Id: "3",
-    Alias: "Custom WebPush",
-    Token: "wp_api_key_789",
-    Provider: "custom",
-    Secret: JSON.stringify({ custom: "custom_secret_789" }),
-    CreatedAt: new Date("2024-10-10"),
-  },
-];
+import { getProviders } from "@/app/api/data/Provider";
 
 export default function NotificationProvidersPage() {
+  const [providers, setProviders] = useState<ProviderSchema[]>([]);
+  useEffect(() => {
+    async function GetData() {
+      const providerDetails = await getProviders();
+      if (!providerDetails) {
+        throw new Error("Failed to fetch provider details");
+      }
+      setProviders(providerDetails);
+    }
+    GetData();
+  }, []);
   const router = useRouter();
-  const [providers, setProviders] =
-    useState<ProviderSchema[]>(initialProviders);
+
   const {
     filteredItems: filteredProviders,
     dateRange,

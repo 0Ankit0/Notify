@@ -17,9 +17,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
-import { useSession } from "next-auth/react";
+import { getUserSession } from "@/app/api/auth/route";
 export default function Page() {
-  const { data: session } = useSession();
+  const user = getUserSession();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: addDays(new Date(), -30),
     to: new Date(),
@@ -29,7 +29,7 @@ export default function Page() {
       <div className="space-y-2">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">
-            Hi, Welcome back {session?.user?.name || "User"}👋
+            Hi, Welcome back {user?.username || "User"}👋
           </h2>
           <div className="hidden items-center space-x-2 md:flex">
             <CalendarDateRangePicker date={dateRange} setDate={setDateRange} />
