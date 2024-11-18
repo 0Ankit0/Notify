@@ -1,20 +1,16 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  loginUser,
-  saveUserSession,
-  getUserSession,
-  clearUserSession,
-} from "@/app/api/auth/route";
+import { getSession, logout } from "@/app/api/auth/route";
 
-interface User {
-  id: string;
-  username: string;
-  email: string;
+export interface SessionData {
+  userId?: string;
+  username?: string;
+  Token?: string;
+  isLoggedIn: boolean;
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -24,10 +20,9 @@ export function useAuth() {
 
   const checkAuth = async () => {
     try {
-      const sessionUser = getUserSession();
-      if (sessionUser) {
-        const user = getUserSession();
-        setUser(user);
+      const sessionUser = await getSession();
+      if (sessionUser.isLoggedIn) {
+        setUser(sessionUser);
       } else {
         setUser(null);
       }
@@ -41,10 +36,16 @@ export function useAuth() {
 
   const login = async (username: string, password: string) => {
     try {
-      const userData = await loginUser(username, password);
-      if (userData) {
-        saveUserSession(userData);
-        setUser(userData);
+      const userData = await fetch("/api/auth/Login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+      const response = await userData.json();
+      if (response.success) {
+        setUser(response);
         router.push("/dashboard");
         return true;
       }
@@ -57,9 +58,8 @@ export function useAuth() {
 
   const logout = async () => {
     try {
-      clearUserSession();
       setUser(null);
-      router.push("/");
+      await logout();
     } catch (error) {
       console.error("Logout failed:", error);
     }
