@@ -119,7 +119,7 @@ namespace notify.Server.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginModel loginModel)
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             var user = await _context.UserMasters
                 .Where(u => u.UserName == loginModel.username && u.Password == loginModel.password)
@@ -131,7 +131,7 @@ namespace notify.Server.Controllers
             }
 
             string Token = _jwtAuth.GenerateToken(user.UserName,user.UserId.ToString());
-            return Ok(new {Token});
+            return Ok(new {Token,id=user.UserId,username=user.UserName});
         }
 
         // DELETE: api/UserMasters/5

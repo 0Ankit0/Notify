@@ -1,6 +1,6 @@
+"use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getSession, logout } from "@/app/api/auth/route";
 
 export interface SessionData {
   userId?: string;
@@ -20,7 +20,8 @@ export function useAuth() {
 
   const checkAuth = async () => {
     try {
-      const sessionUser = await getSession();
+      const response = await fetch("/api/Session");
+      const sessionUser = await response.json();
       if (sessionUser.isLoggedIn) {
         setUser(sessionUser);
       } else {
@@ -43,9 +44,10 @@ export function useAuth() {
         },
         body: JSON.stringify({ username, password }),
       });
+      console.log(userData);
       const response = await userData.json();
       if (response.success) {
-        setUser(response);
+        setUser(response.user);
         router.push("/dashboard");
         return true;
       }
@@ -59,7 +61,13 @@ export function useAuth() {
   const logout = async () => {
     try {
       setUser(null);
-      await logout();
+      const res = await fetch("/api/auth/Logout", {
+        method: "POST",
+      });
+      const response = await res.json();
+      if (response.success) {
+        router.push("/");
+      }
     } catch (error) {
       console.error("Logout failed:", error);
     }
