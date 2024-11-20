@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { useAuthContext } from "@/app/Providers";
 import {
   BadgeCheck,
   Bell,
@@ -37,12 +37,17 @@ export function NavUser({
     avatar: string;
   };
 }) {
+  const { logout } = useAuthContext();
   const { isMobile } = useSidebar();
   const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut({ redirect: false });
-    router.push("/");
+    try {
+      await logout();
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
 
   return (

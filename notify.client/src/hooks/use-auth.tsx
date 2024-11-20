@@ -22,6 +22,7 @@ export function useAuth() {
     try {
       const response = await fetch("/api/Session");
       const sessionUser = await response.json();
+      console.log("sessionUser", sessionUser);
       if (sessionUser.isLoggedIn) {
         setUser(sessionUser);
       } else {
@@ -37,16 +38,18 @@ export function useAuth() {
 
   const login = async (username: string, password: string) => {
     try {
-      const userData = await fetch("/api/auth/Login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
-      console.log(userData);
+      const userData = await fetch(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/User/Login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username, password }),
+        }
+      );
       const response = await userData.json();
-      if (response.success) {
+      if (userData.status == 200) {
         setUser(response.user);
         router.push("/dashboard");
         return true;
@@ -61,13 +64,10 @@ export function useAuth() {
   const logout = async () => {
     try {
       setUser(null);
-      const res = await fetch("/api/auth/Logout", {
+      const res = await fetch("/api/Session/RemoveSession", {
         method: "POST",
       });
-      const response = await res.json();
-      if (response.success) {
-        router.push("/");
-      }
+      // const response = await res.json();
     } catch (error) {
       console.error("Logout failed:", error);
     }

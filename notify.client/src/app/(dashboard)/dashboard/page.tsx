@@ -17,9 +17,10 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
-import { getUserSession } from "@/app/api/auth/route";
+import { useAuthContext } from "@/app/Providers";
+
 export default function Page() {
-  const user = getUserSession();
+  const { user } = useAuthContext();
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: addDays(new Date(), -30),
     to: new Date(),

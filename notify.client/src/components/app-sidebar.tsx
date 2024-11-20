@@ -18,7 +18,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { getUserSession } from "@/app/api/auth/route";
+import { useAuthContext } from "@/app/Providers";
 // This is sample data.
 const data = {
   user: {
@@ -78,9 +78,10 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = getUserSession();
+  const { user } = useAuthContext();
   data.user.name = user?.username || "admin";
-  data.user.email = user?.email || "test@gmail.com";
+  data.user.email = "test@gmail.com";
+  // user?.email ||
 
   const [mounted, setMounted] = React.useState(false);
 

@@ -24,5 +24,10 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
   }
   return NextResponse.json(session);
 }
+async function RemoveSession(req: NextApiRequest, res: NextApiResponse) {
+  const session = await getSession();
+  session.destroy();
+  return NextResponse.redirect("/");
+}
 
-export {GET}
+export {GET,RemoveSession}
