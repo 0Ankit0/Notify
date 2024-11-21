@@ -24,10 +24,31 @@ async function GET(req: NextApiRequest, res: NextApiResponse) {
   }
   return NextResponse.json(session);
 }
-async function RemoveSession(req: NextApiRequest, res: NextApiResponse) {
+
+//To set the session
+async function POST(req: NextApiRequest, res: NextApiResponse) {
+  try {
+    const session = await getSession();
+    const user = req.body;
+    session.username = user.username;
+    session.Token = user.Token;
+    session.isLoggedIn = true;
+  
+    await session.save();
+    return NextResponse.json(session);
+  } catch (error) {
+    console.error("Login failed:", error);
+    return NextResponse.error();
+    
+  }
+ 
+}
+
+async function DELETE(req: NextApiRequest, res: NextApiResponse) {
   const session = await getSession();
+  session.isLoggedIn = false;
   session.destroy();
   return NextResponse.redirect("/");
 }
 
-export {GET,RemoveSession}
+export {GET,DELETE,POST}

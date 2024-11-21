@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export interface SessionData {
   userId?: string;
@@ -50,7 +51,11 @@ export function useAuth() {
       );
       const response = await userData.json();
       if (userData.status == 200) {
-        setUser(response.user);
+        console.log("response", response);
+        const sessionRes = await axios.post("/api/Session", {
+          response,
+        });
+        setUser(sessionRes.data);
         router.push("/dashboard");
         return true;
       }
@@ -64,9 +69,7 @@ export function useAuth() {
   const logout = async () => {
     try {
       setUser(null);
-      const res = await fetch("/api/Session/RemoveSession", {
-        method: "POST",
-      });
+      const res = await axios.delete("/api/Session");
       // const response = await res.json();
     } catch (error) {
       console.error("Logout failed:", error);

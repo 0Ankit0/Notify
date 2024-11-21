@@ -13,19 +13,19 @@ export default function AuthWrapper({
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    if (!user) {
-      router.replace("/");
-    }
-  }, [user, router]);
+  // useEffect(() => {
+  //   if (!user) {
+  //     router.replace("/");
+  //   }
+  // }, [user]);
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  // if (loading) {
+  //   return <LoadingScreen />;
+  // }
 
-  if (!user) {
-    return null;
-  }
+  // if (!user) {
+  //   return null;
+  // }
 
   return <>{children}</>;
 }
