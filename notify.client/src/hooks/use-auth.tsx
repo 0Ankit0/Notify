@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import CryptoJS from "crypto-js";
 
 export interface SessionData {
   userId?: string;
@@ -21,11 +22,14 @@ export function useAuth() {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch("/api/Session");
-      const sessionUser = await response.json();
-      console.log("sessionUser", sessionUser);
-      if (sessionUser.isLoggedIn) {
-        setUser(sessionUser);
+      const encryptedSessionData = sessionStorage.getItem("sessionData");
+      if (encryptedSessionData) {
+        const bytes = CryptoJS.AES.decrypt(
+          encryptedSessionData,
+          process.env.NEXT_PUBLIC_SESSION_SECRET!
+        );
+        const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        setUser(decryptedData);
       } else {
         setUser(null);
       }
@@ -51,11 +55,12 @@ export function useAuth() {
       );
       const response = await userData.json();
       if (userData.status == 200) {
-        console.log("response", response);
-        const sessionRes = await axios.post("/api/Session", {
-          response,
-        });
-        setUser(sessionRes.data);
+        const encryptedData = CryptoJS.AES.encrypt(
+          JSON.stringify(response),
+          process.env.NEXT_PUBLIC_SESSION_SECRET!
+        ).toString();
+        sessionStorage.setItem("sessionData", encryptedData);
+        setUser(response);
         router.push("/dashboard");
         return true;
       }
@@ -69,8 +74,7 @@ export function useAuth() {
   const logout = async () => {
     try {
       setUser(null);
-      const res = await axios.delete("/api/Session");
-      // const response = await res.json();
+      sessionStorage.removeItem("sessionData");
     } catch (error) {
       console.error("Logout failed:", error);
     }
