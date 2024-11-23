@@ -10,6 +10,7 @@ using notify.Server.Classes;
 using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Users;
+using Notify.Server.Models;
 
 namespace notify.Server.Controllers
 {
@@ -59,16 +60,21 @@ namespace notify.Server.Controllers
 
         // PUT: api/UserTokens/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut()]
-        public async Task<IActionResult> Put(UserTokenModel userTokenModel)
+        [HttpPut]
+        public async Task<IActionResult> Put()
         {
-            int id = userTokenModel.Id ?? 0;
-            if (id ==0 || string.IsNullOrEmpty(userTokenModel.Token))
+            var user = HttpContext.Items["User"] as AuthenticatedUser;
+            int id = Convert.ToInt32(user.UserId);
+            if (id ==0)
             {
                 return BadRequest();
             }
-            UserToken userToken = new UserToken();
-            userToken.Token = userTokenModel.Token;
+            UserToken userToken = _context.UserTokens.FirstOrDefault(ut => ut.UserId == id);
+            if (userToken == null)
+            {
+                return NotFound();
+            }
+            userToken.Token = Guid.NewGuid().ToString();
             _context.Entry(userToken).State = EntityState.Modified;
 
             try
@@ -87,7 +93,7 @@ namespace notify.Server.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok(userToken.Token);
         }
 
         // POST: api/UserTokens

@@ -8,6 +8,26 @@ const api = axios.create({
     process.env.NOTIFY_API_URL || "https://localhost:44320/api" + "/Providers",
 });
 
+// Add a request interceptor to include the authorization header
+api.interceptors.request.use(
+  (config) => {
+    const encryptedSessionData = sessionStorage.getItem("sessionData");
+    if (encryptedSessionData) {
+      const bytes = CryptoJS.AES.decrypt(
+        encryptedSessionData,
+        process.env.NEXT_PUBLIC_SESSION_SECRET!
+      );
+      const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+      config.headers.Authorization = `Bearer ${decryptedData.Token}`;
+    }
+    return config;
+  },
+  (error) => {
+    // Handle the error
+    return Promise.reject(error);
+  }
+);
+
 export const getProviders = async (): Promise<ProviderSchema[]> => {
   const response = await api.get("/Get");
   return response.data;

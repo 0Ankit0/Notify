@@ -131,7 +131,7 @@ namespace notify.Server.Controllers
             }
 
             string Token = _jwtAuth.GenerateToken(user.UserName,user.UserId.ToString());
-            return Ok(new {Token,id=user.UserId,username=user.UserName});
+            return Ok(new {Token,username=user.UserName});
         }
 
         // DELETE: api/UserMasters/5

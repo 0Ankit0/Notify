@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { generateNewToken } from "@/app/api/data/UserTokens";
 import {
   Select,
   SelectContent,
@@ -47,12 +48,13 @@ const ProviderDetailsModal = ({
     }
   };
 
-  const generateToken = () => {
+  const generateToken = async () => {
     if (currentProvider) {
-      const newToken = `${
-        currentProvider.Provider
-            }_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        setCurrentProvider({ ...currentProvider, Token: newToken });
+      const newToken = await generateNewToken();
+      // const newToken = `${
+      //   currentProvider.Provider
+      // }_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      setCurrentProvider({ ...currentProvider, Token: newToken });
     }
   };
 
@@ -95,7 +97,7 @@ const ProviderDetailsModal = ({
               </Label>
               <Input
                 id="Alias"
-                value={currentProvider.alias}
+                value={currentProvider.Alias}
                 onChange={(e) =>
                   setCurrentProvider({
                     ...currentProvider,
@@ -131,7 +133,7 @@ const ProviderDetailsModal = ({
                 Provider
               </Label>
               <Select
-                value={currentProvider.provider}
+                value={currentProvider.Provider}
                 onValueChange={(value) =>
                   setCurrentProvider({
                     ...currentProvider,
