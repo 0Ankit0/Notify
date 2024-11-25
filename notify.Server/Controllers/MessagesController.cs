@@ -108,7 +108,18 @@ namespace notify.Server.Controllers
             _context.Messages.Add(message);
             try
             {
+                //await _context.SaveChangesAsync();
+                var sendMessage = await SendMessage(messageModel);
+                if (sendMessage is BadRequestObjectResult)
+                {
+                    message.Status = MessageStatus.Failed;
+                    await _context.SaveChangesAsync();
+                    return BadRequest("Failed to send notification");
+                }
+                message.Status = MessageStatus.Sent;
                 await _context.SaveChangesAsync();
+
+
             }
             catch (DbUpdateException)
             {
@@ -122,11 +133,11 @@ namespace notify.Server.Controllers
                 }
             }
 
-            return CreatedAtAction("GetMessage", new { id = message.Id }, messageModel);
+            return CreatedAtAction("Get", new { id = message.Id }, messageModel);
         }
 
         [HttpPost("send")]
-        public async Task<IActionResult> SendNotification(MessageModel messageModel)
+        public async Task<IActionResult> SendMessage(MessageModel messageModel)
         {
             var provider = await _context.ProviderMasters.FindAsync(messageModel.Provider);
             if (provider == null)
