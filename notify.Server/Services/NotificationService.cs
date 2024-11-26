@@ -5,12 +5,15 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
+using FirebaseAdmin.Messaging;
 
 namespace Notify.Server.Services
 {
     public interface INotificationService
     {
-        Task<bool> SendNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel, UserToken userToken);
+        Task<bool> SendNotification(ProviderMaster provider, MessageModel messageModel);
     }
 
     public class NotificationService : INotificationService
@@ -22,49 +25,93 @@ namespace Notify.Server.Services
             _httpClient = httpClient;
         }
 
-        public async Task<bool> SendNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel, UserToken userToken)
+        public async Task<bool> SendNotification(ProviderMaster provider, MessageModel messageModel)
         {
             switch (provider.ProviderName.ToLower())
             {
-                case "Firebase":
-                    return await SendFirebaseNotification(provider, user, messageModel,userToken);
-                case "OneSignal":
-                    return await SendOneSignalNotification(provider, user, messageModel, userToken);
-                case "Custom":
-                    return await SendCustomNotification(provider, user, messageModel);
+                case "firebase":
+                    return await SendFirebaseNotification(provider, messageModel);
+                case "onesignal":
+                    return await SendOneSignalNotification(provider, messageModel);
+                case "custom":
+                    return await SendCustomNotification(provider, messageModel);
                 default:
                     return false;
             }
         }
 
-        private async Task<bool> SendFirebaseNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel,UserToken userToken)
+        private async Task<bool> SendFirebaseNotification(ProviderMaster provider, MessageModel mm)
         {
-            var firebaseMessage = new
+            FirebaseApp.Create(new AppOptions
             {
-                to = messageModel.Receiver,
-                notification = new
+                Credential = GoogleCredential.FromJson(provider.Secret)
+            });
+            var message = new Message
+            {
+                Token = mm.Receiver,
+                Notification = new Notification
                 {
-                    title = "New Message",
-                    body = messageModel.Content
+                    Title = mm.Title,
+                    Body = mm.Content
                 }
             };
-
-            var requestContent = new StringContent(JsonSerializer.Serialize(firebaseMessage), Encoding.UTF8, "application/json");
-            var request = new HttpRequestMessage(HttpMethod.Post, "https://fcm.googleapis.com/fcm/send")
+            try
             {
-                Headers = { { "Authorization", $"key={userToken.Token}" } },
-                Content = requestContent
-            };
-
-            var response = await _httpClient.SendAsync(request);
-            return response.IsSuccessStatusCode;
+                string response = await FirebaseMessaging.DefaultInstance.SendAsync(message);
+                //return Ok(new { MessageId = response });
+                return true;
+            }
+            catch (Exception ex)
+            {
+                //return BadRequest(new { Error = ex.Message });
+                return false;
+            }
         }
 
-        private async Task<bool> SendOneSignalNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel, UserToken userToken)
+        private async Task<bool> SendMultipleFirebaseNotification(ProviderMaster provider, List<MessageModel> messageModels)
+        {
+            FirebaseApp.Create(new AppOptions
+            {
+                Credential = GoogleCredential.FromJson(provider.Secret)
+            });
+
+            var messages = messageModels.Select(mm => new Message
+            {
+                Token = mm.Receiver,
+                Notification = new Notification
+                {
+                    Title = mm.Title,
+                    Body = mm.Content
+                }
+            }).ToList();
+
+            try
+            {
+                var response = await FirebaseMessaging.DefaultInstance.SendAllAsync(messages);
+                // Check the response for any failed messages
+                if (response.FailureCount > 0)
+                {
+                    // Handle failed messages if needed
+                    foreach (var error in response.Responses.Where(r => !r.IsSuccess))
+                    {
+                        Console.WriteLine($"Error sending message: {error.Exception}");
+                    }
+                }
+                return response.FailureCount == 0;
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if needed
+                Console.WriteLine($"Exception: {ex.Message}");
+                return false;
+            }
+        }
+
+        private async Task<bool> SendOneSignalNotification(ProviderMaster provider, MessageModel messageModel)
         {
             var oneSignalMessage = new
             {
-                app_id = userToken.Token,
+                app_id = provider.Secret,
                 contents = new { en = messageModel.Content },
                 include_player_ids = new[] { messageModel.Receiver }
             };
@@ -74,7 +121,7 @@ namespace Notify.Server.Services
             return response.IsSuccessStatusCode;
         }
 
-        private async Task<bool> SendCustomNotification(ProviderMaster provider, UserMaster user, MessageModel messageModel)
+        private async Task<bool> SendCustomNotification(ProviderMaster provider, MessageModel messageModel)
         {
             // Implement custom notification logic here
             // Use provider.Token and provider.Secret for authentication if needed

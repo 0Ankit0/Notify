@@ -33,9 +33,10 @@ namespace notify.Server.Filters
                 context.Result = new UnauthorizedResult();
                 return;
             }
+            var provider = await _dbContext.ProviderMasters.FindAsync(userToken.ProviderId);
 
             // Attach user information to the context
-            context.HttpContext.Items["User"] = userToken.UserMaster;
+            context.HttpContext.Items["Provider"] = provider;
 
             await next();
         }

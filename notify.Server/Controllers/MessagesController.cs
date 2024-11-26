@@ -11,6 +11,7 @@ using notify.Server.Filters;
 using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Messages;
+using Notify.Server.Data.Providers;
 using Notify.Server.Services;
 
 namespace notify.Server.Controllers
@@ -100,16 +101,21 @@ namespace notify.Server.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ServiceFilter(typeof(TokenValidationFilter))]
-        public async Task<ActionResult<MessageModel>> Post(MessageModel messageModel)
+        public async Task<ActionResult<MessageModel>> Post([FromBody] MessageModel messageModel)
         {
+            if (HttpContext.Items["Provider"] is not ProviderMaster provider)
+            {
+                return Unauthorized();
+            }
             Message message = new Message();
             _customMethods.MapProperties(messageModel, message);
             message.Status = MessageStatus.Pending;
+            message.Provider = provider;
             _context.Messages.Add(message);
             try
             {
                 //await _context.SaveChangesAsync();
-                var sendMessage = await SendMessage(messageModel);
+                var sendMessage = await SendMessage(messageModel, provider);
                 if (sendMessage is BadRequestObjectResult)
                 {
                     message.Status = MessageStatus.Failed;
@@ -137,39 +143,23 @@ namespace notify.Server.Controllers
         }
 
         [HttpPost("send")]
-        public async Task<IActionResult> SendMessage(MessageModel messageModel)
+        public async Task<IActionResult> SendMessage(MessageModel messageModel, ProviderMaster provider)
         {
-            var provider = await _context.ProviderMasters.FindAsync(messageModel.Provider);
-            if (provider == null)
+            try
             {
-                return BadRequest("Invalid provider");
-            }
 
-            var userId = User.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
-            if (string.IsNullOrEmpty(userId))
+                var result = await _notificationService.SendNotification(provider, messageModel);
+                if (!result)
+                {
+                    return BadRequest("Failed to send notification");
+                }
+
+                return Ok("Notification sent successfully");
+            }
+            catch (Exception ex)
             {
-                return BadRequest("Invalid user");
+                return BadRequest(ex.Message);
             }
-
-            var user = await _context.UserMasters.FindAsync(int.Parse(userId));
-            if (user == null)
-            {
-                return BadRequest("Invalid user");
-            }
-
-            var userToken = await _context.UserTokens.FirstOrDefaultAsync(t => t.UserId == user.UserId && t.ProviderId == provider.ProviderId);
-            if (userToken == null)
-            {
-                return BadRequest("User token not found");
-            }
-
-            var result = await _notificationService.SendNotification(provider, user, messageModel,userToken);
-            if (!result)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Failed to send notification");
-            }
-
-            return Ok("Notification sent successfully");
         }
 
         // DELETE: api/Messages/5
