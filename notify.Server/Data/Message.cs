@@ -14,6 +14,7 @@ namespace Notify.Server.Data.Messages
         public string Receiver { get; set; }
         [Required(ErrorMessage ="Please provide a valid message")]
         public string Content { get; set; }
+        public string Title { get; set; }
         [Required]
         public ProviderMaster Provider { get; set; }
         public MessageStatus Status { get; set; }

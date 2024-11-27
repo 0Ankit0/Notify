@@ -18,7 +18,12 @@ namespace Notify.Server.Data.Providers
 
         // Computed property to get the provider name from the enum
         [NotMapped]
-        public string ProviderName => Provider.ToString();
+        public string ProviderName => GetProviderName();
+
+        private string GetProviderName()
+        {
+            return Enum.GetName(typeof(ProviderEnum), Provider) ?? "Error";
+        }
     }
 
     public enum ProviderEnum

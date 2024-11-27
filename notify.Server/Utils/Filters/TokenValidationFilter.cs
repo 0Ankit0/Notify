@@ -18,14 +18,15 @@ namespace notify.Server.Filters
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            if (!context.HttpContext.Request.Headers.TryGetValue("ApiToken", out var token))
+            if (!context.HttpContext.Request.Headers.TryGetValue("ApiToken", out var tokenValues))
             {
                 context.Result = new UnauthorizedResult();
                 return;
             }
 
+            var token = tokenValues.ToString(); // Convert StringValues to string
+
             var userToken = await _dbContext.UserTokens
-                .Include(ut => ut.UserMaster)
                 .FirstOrDefaultAsync(ut => ut.Token == token);
 
             if (userToken == null)

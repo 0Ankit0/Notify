@@ -61,7 +61,7 @@ namespace notify.Server.Controllers
         // PUT: api/ProviderMasters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
-        public async Task<IActionResult> Put(ProviderModel providerModel)
+        public async Task<IActionResult> Put([FromBody] ProviderModel providerModel)
         {
             int id = providerModel.ProviderId ?? 0;
             if (id ==0)
@@ -70,6 +70,7 @@ namespace notify.Server.Controllers
             }
             ProviderMaster providerMaster = new ProviderMaster();
             providerMaster.Alias = providerModel.Alias;
+            providerMaster.Provider = providerModel.Provider;
             providerMaster.Secret = providerModel.Secret;
             _context.Entry(providerMaster).State = EntityState.Modified;
 
@@ -95,15 +96,19 @@ namespace notify.Server.Controllers
         // POST: api/ProviderMasters
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProviderModel>> Post(ProviderModel providerModel)
+        public async Task<ActionResult<ProviderModel>> Post([FromBody] ProviderModel providerModel)
         {
             ProviderMaster providerMaster = new ProviderMaster();
-            _customMethods.MapProperties(providerModel, providerMaster);
+            providerMaster.Provider = providerModel.Provider;
+            providerMaster.Secret = providerModel.Secret;
+            providerMaster.Alias = providerModel.Alias;
+            providerMaster.CreatedAt = DateTime.Now;
+            //_customMethods.MapProperties(providerModel, providerMaster);
 
             _context.ProviderMasters.Add(providerMaster);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetProviderMaster", new { id = providerMaster.ProviderId }, providerModel);
+            return CreatedAtAction("Get", new { id = providerMaster.ProviderId }, providerModel);
         }
 
         // DELETE: api/ProviderMasters/5

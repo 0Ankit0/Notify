@@ -108,7 +108,11 @@ namespace notify.Server.Controllers
                 return Unauthorized();
             }
             Message message = new Message();
-            _customMethods.MapProperties(messageModel, message);
+            message.Content = messageModel.Content;
+            message.Receiver = messageModel.Receiver;
+            message.Title = messageModel.Title;
+            message.CreatedAt = DateTime.Now;
+
             message.Status = MessageStatus.Pending;
             message.Provider = provider;
             _context.Messages.Add(message);
@@ -142,8 +146,7 @@ namespace notify.Server.Controllers
             return CreatedAtAction("Get", new { id = message.Id }, messageModel);
         }
 
-        [HttpPost("send")]
-        public async Task<IActionResult> SendMessage(MessageModel messageModel, ProviderMaster provider)
+        private async Task<IActionResult> SendMessage(MessageModel messageModel, ProviderMaster provider)
         {
             try
             {

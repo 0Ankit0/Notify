@@ -22,6 +22,21 @@ namespace Notify.Server.Data
             base.OnModelCreating(modelBuilder);
 
             // Configure relationships and keys if necessary
+            modelBuilder.Entity<ProviderMaster>()
+               .Property(p => p.ProviderId)
+               .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<UserMaster>()
+                .Property(u => u.UserId)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<UserToken>()
+                .Property(ut => ut.Id)
+                .ValueGeneratedOnAdd();
+
+            modelBuilder.Entity<Message>()
+                .Property(m => m.Id)
+                .ValueGeneratedOnAdd();
 
             modelBuilder.Entity<UserMaster>()
                 .HasMany(u => u.UserTokens)
