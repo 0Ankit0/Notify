@@ -27,13 +27,13 @@ namespace Notify.Server.Services
 
         public async Task<bool> SendNotification(ProviderMaster provider, MessageModel messageModel)
         {
-            switch (provider.ProviderName.ToLower())
+            switch (provider.Provider)
             {
-                case "firebase":
+                case ProviderEnum.Firebase:
                     return await SendFirebaseNotification(provider, messageModel);
-                case "onesignal":
+                case ProviderEnum.OneSignal:
                     return await SendOneSignalNotification(provider, messageModel);
-                case "custom":
+                case ProviderEnum.Custom:
                     return await SendCustomNotification(provider, messageModel);
                 default:
                     return false;
@@ -87,7 +87,7 @@ namespace Notify.Server.Services
 
             try
             {
-                var response = await FirebaseMessaging.DefaultInstance.SendAllAsync(messages);
+                var response = await FirebaseMessaging.DefaultInstance.SendEachAsync(messages);
                 // Check the response for any failed messages
                 if (response.FailureCount > 0)
                 {

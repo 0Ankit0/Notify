@@ -69,7 +69,7 @@ namespace notify.Server.Controllers
             {
                 return BadRequest();
             }
-            UserToken userToken = _context.UserTokens.FirstOrDefault(ut => ut.UserId == id);
+            var userToken =await _context.UserTokens.FirstOrDefaultAsync(ut => ut.UserId == id);
             if (userToken == null)
             {
                 return NotFound();

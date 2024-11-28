@@ -74,7 +74,11 @@ namespace notify.Server.Controllers
             {
                 return BadRequest();
             }
-            UserMaster userMaster = new UserMaster();
+            var userMaster =await _context.UserMasters.FindAsync(id);
+            if (userMaster == null)
+            {
+                return NotFound();
+            }
             userMaster.Address = userModel.Address;
             userMaster.UserName = userModel.UserName;
             userMaster.Password = userModel.Password;

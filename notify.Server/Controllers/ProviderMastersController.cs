@@ -68,7 +68,11 @@ namespace notify.Server.Controllers
             {
                 return BadRequest();
             }
-            ProviderMaster providerMaster = new ProviderMaster();
+            var providerMaster = await _context.ProviderMasters.FindAsync(id);
+            if (providerMaster == null)
+            {
+                return NotFound();
+            }
             providerMaster.Alias = providerModel.Alias;
             providerMaster.Provider = providerModel.Provider;
             providerMaster.Secret = providerModel.Secret;

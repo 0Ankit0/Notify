@@ -61,41 +61,6 @@ namespace notify.Server.Controllers
             _customMethods.MapProperties(message, messageModel);
             return messageModel;
         }
-
-        // PUT: api/Messages/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut]
-        public async Task<IActionResult> Put(MessageModel messageModel)
-        {
-            string id = messageModel.Id;
-            if (String.IsNullOrEmpty(id))
-            {
-                return BadRequest();
-            }
-            Message message = new Message();
-            message.Status = Enum.Parse<MessageStatus>(messageModel.Status);
-
-            _context.Entry(message).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MessageExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
         // POST: api/Messages
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
