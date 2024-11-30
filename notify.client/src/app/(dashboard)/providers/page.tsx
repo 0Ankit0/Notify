@@ -20,6 +20,7 @@ import ProviderDetailsModal from "./_components/provider-details-modal";
 import ProviderTable from "./_components/provider-table";
 import { ProviderSchema } from "@/utils/providerSchema";
 import { getProviders } from "@/app/api/data/Provider";
+import { add, addDays, subMonths } from "date-fns";
 
 export default function NotificationProvidersPage() {
   const [providers, setProviders] = useState<ProviderSchema[]>([]);
@@ -29,6 +30,7 @@ export default function NotificationProvidersPage() {
       if (!providerDetails) {
         throw new Error("Failed to fetch provider details");
       }
+      // console.log("Fetched providers:", providerDetails);
       setProviders(providerDetails);
     }
     GetData();
@@ -44,8 +46,8 @@ export default function NotificationProvidersPage() {
     searchTerm,
     setSearchTerm,
   } = useFilter(providers, {
-    from: new Date("2024-09-01"),
-    to: new Date("2024-10-31"),
+    from: subMonths(new Date(), 1),
+    to: addDays(new Date(), 1),
   });
   const [selectedProvider, setSelectedProvider] =
     useState<ProviderSchema | null>(null);
@@ -54,12 +56,16 @@ export default function NotificationProvidersPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const handleViewDetails = (provider: ProviderSchema) => {
+    console.log("Viewing details for provider:", provider);
     setSelectedProvider(provider);
     setIsModalOpen(true);
   };
 
   const handleSave = (provider: ProviderSchema) => {
-    setProviders(providers.map((p) => (p.Id === provider.Id ? provider : p)));
+    console.log("Saving provider:", provider);
+    setProviders((prevProviders) =>
+      prevProviders.map((p) => (p.Id === provider.Id ? provider : p))
+    );
     setIsModalOpen(false);
   };
 
@@ -98,6 +104,7 @@ export default function NotificationProvidersPage() {
               type="text"
               placeholder="Search providers..."
               value={searchTerm}
+              autoComplete="off"
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
             />

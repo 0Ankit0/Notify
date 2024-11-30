@@ -1,6 +1,6 @@
 import axios from "axios";
 import { MessageSchema } from "@/utils/messageSchema";
-
+import CryptoJS from "crypto-js";
 const api = axios.create({
   baseURL:
     process.env.NOTIFY_API_URL || "https://localhost:44320/api" + "/Messages",

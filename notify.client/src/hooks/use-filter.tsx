@@ -23,10 +23,10 @@ const useFilter = <T extends FilterableItem>(
 
   useEffect(() => {
     const filtered = items.filter((item) => {
+      const createdAtDate = new Date(item.CreatedAt);
       const isInDateRange =
         dateRange?.from && dateRange?.to
-          ? item.CreatedAt >= dateRange.from &&
-            item.CreatedAt <= addDays(dateRange.to, 1)
+          ? createdAtDate >= dateRange.from && createdAtDate <= dateRange.to
           : true;
       const matchesProviderType =
         selectedProviderType === "all" ||

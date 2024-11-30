@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
+    DialogHeader,
+    DialogDescription,
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
@@ -44,6 +45,7 @@ const ProviderDetailsModal = ({
 
   const handleSave = () => {
     if (currentProvider) {
+      console.log("Saving provider from modal:", currentProvider);
       onSave(currentProvider);
     }
   };
@@ -51,9 +53,6 @@ const ProviderDetailsModal = ({
   const generateToken = async () => {
     if (currentProvider) {
       const newToken = await generateNewToken();
-      // const newToken = `${
-      //   currentProvider.Provider
-      // }_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       setCurrentProvider({ ...currentProvider, Token: newToken });
     }
   };
@@ -85,14 +84,17 @@ const ProviderDetailsModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle>Provider Details</DialogTitle>
-        </DialogHeader>
+              </DialogHeader>
+              <DialogDescription>
+                  Fill in the details for the provider below.
+              </DialogDescription>
         {currentProvider && (
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="Alias" className="text-right">
+              <Label htmlFor="Alias" className="text-center">
                 Alias
               </Label>
               <Input
@@ -108,7 +110,7 @@ const ProviderDetailsModal = ({
               />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="Token" className="text-right">
+              <Label htmlFor="Token" className="text-center">
                 API Key
               </Label>
               <div className="col-span-3 flex">
@@ -129,7 +131,7 @@ const ProviderDetailsModal = ({
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="Provider" className="text-right">
+              <Label htmlFor="Provider" className="text-center">
                 Provider
               </Label>
               <Select
@@ -153,7 +155,7 @@ const ProviderDetailsModal = ({
               </Select>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="Secret" className="text-right">
+              <Label htmlFor="Secret" className="text-center">
                 Secret
               </Label>
               <div className="col-span-3 flex">
@@ -163,7 +165,7 @@ const ProviderDetailsModal = ({
                   onChange={(e) => handleSecretChange(e.target.value)}
                   className="font-mono text-sm"
                   rows={10}
-                  style={{ minHeight: "150px", resize: "vertical" }}
+                  style={{ minHeight: "200px", resize: "vertical" }}
                 />
               </div>
             </div>

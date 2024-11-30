@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ApiKeyInput from "./api_key";
 import { ProviderSchema } from "@/utils/providerSchema";
+import { date } from "zod";
 
 type ProviderTableProps = {
   providers: ProviderSchema[];
@@ -39,7 +40,7 @@ const ProviderTable = ({ providers, onViewDetails }: ProviderTableProps) => {
               </TableCell>
               <TableCell>{provider.Provider}</TableCell>
               <TableCell>{"•".repeat(10)}</TableCell>
-              <TableCell>{provider.CreatedAt.toLocaleDateString()}</TableCell>
+              <TableCell>{new Date(provider.CreatedAt).toString()}</TableCell>
               <TableCell>
                 <Button
                   variant="outline"
