@@ -10,6 +10,7 @@ using notify.Server.Classes;
 using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Providers;
+using Notify.Server.Data.Users;
 
 namespace notify.Server.Controllers
 {
@@ -29,34 +30,61 @@ namespace notify.Server.Controllers
 
         // GET: api/ProviderMasters
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ProviderModel>>> Get()
+        public async Task<ActionResult<IEnumerable<ProviderResponseModel>>> Get()
         {
-            return await _context.ProviderMasters.Select(p => new ProviderModel
-            {
-                ProviderId = p.ProviderId,
-                Alias = p.Alias,
-                Provider = p.Provider,
-                Secret = p.Secret,
-                CreatedAt = p.CreatedAt
-            }).ToListAsync();
-            
+            return await _context.ProviderMasters
+                 .GroupJoin(_context.UserTokens,
+                            provider => provider.ProviderId,
+                            token => token.ProviderId,
+                            (provider, tokens) => new { provider, tokens })
+                 .SelectMany(
+                     pt => pt.tokens.DefaultIfEmpty(),
+                     (pt, token) => new ProviderResponseModel
+                     {
+                         Id = pt.provider.ProviderId,
+                         Alias = pt.provider.Alias,
+                         Token = token != null ? token.Token : null,
+                         Provider = pt.provider.Provider.ToString(),
+                         Secret = pt.provider.Secret,
+                         CreatedAt = pt.provider.CreatedAt
+                     })
+                 .ToListAsync();
+
+
+
         }
 
         // GET: api/ProviderMasters/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProviderModel>> Get(int id)
+        public async Task<ActionResult<ProviderResponseModel>> Get(int id)
         {
-            var providerMaster = await _context.ProviderMasters.FindAsync(id);
+            var provider = await _context.ProviderMasters
+                .Where(p => p.ProviderId == id)
+                .GroupJoin(_context.UserTokens,
+                           provider => provider.ProviderId,
+                           token => token.ProviderId,
+                           (provider, tokens) => new { provider, tokens })
+                .SelectMany(
+                    pt => pt.tokens.DefaultIfEmpty(),
+                    (pt, token) => new ProviderResponseModel
+                    {
+                        Id = pt.provider.ProviderId,
+                        Alias = pt.provider.Alias,
+                        Token = token != null ? token.Token : null,
+                        Provider = pt.provider.Provider.ToString(),
+                        Secret = pt.provider.Secret,
+                        CreatedAt = pt.provider.CreatedAt
+                    })
+                .FirstOrDefaultAsync();
 
-            if (providerMaster == null)
+            if (provider == null)
             {
                 return NotFound();
             }
-            ProviderModel providerModel = new ProviderModel();
-            _customMethods.MapProperties(providerMaster, providerModel);
 
-            return providerModel;
+            return provider;
         }
+
 
         // PUT: api/ProviderMasters/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
