@@ -51,8 +51,9 @@ export const getProvider = async (id: string): Promise<ProviderSchema> => {
     return response.data;
 };
 
-export const putProvider = async (provider: ProviderSchema): Promise<void> => {
-    await api.put("/", provider);
+export const putProvider = async (provider: ProviderSchema): Promise<ProviderSchema |null> => {
+    const response = await api.put("/", provider);
+    return response.data;
 };
 
 export const postProvider = async (

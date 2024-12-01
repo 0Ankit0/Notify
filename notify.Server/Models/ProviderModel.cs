@@ -18,6 +18,7 @@ namespace notify.Server.Models
         public int? Id { get; set; }
         public string? Alias { get; set; }
         public string? Provider { get; set; }
+        public string? ProviderId { get; set; }
         public string? Token { get; set; }
         public string Secret { get; set; }
         public DateTime CreatedAt { get; set; }

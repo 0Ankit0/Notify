@@ -45,6 +45,7 @@ namespace notify.Server.Controllers
                          Alias = pt.provider.Alias,
                          Token = token != null ? token.Token : null,
                          Provider = pt.provider.Provider.ToString(),
+                         ProviderId = pt.provider.ProviderId.ToString(),
                          Secret = pt.provider.Secret,
                          CreatedAt = pt.provider.CreatedAt
                      })
@@ -71,7 +72,7 @@ namespace notify.Server.Controllers
                         Id = pt.provider.ProviderId,
                         Alias = pt.provider.Alias,
                         Token = token != null ? token.Token : null,
-                        Provider = pt.provider.Provider.ToString(),
+                        Provider = pt.provider.ProviderId.ToString(),
                         Secret = pt.provider.Secret,
                         CreatedAt = pt.provider.CreatedAt
                     })

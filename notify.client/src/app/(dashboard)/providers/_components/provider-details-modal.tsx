@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
-    DialogHeader,
-    DialogDescription,
+  DialogHeader,
+  DialogDescription,
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select";
 import { Save, RefreshCw } from "lucide-react";
 import { ProviderSchema } from "@/utils/providerSchema";
+import { getProvider, putProvider } from "@/app/api/data/Provider";
 
 type ProviderDetailsModalProps = {
   isOpen: boolean;
@@ -40,13 +41,27 @@ const ProviderDetailsModal = ({
   );
 
   useEffect(() => {
-    setCurrentProvider(provider);
+    const fetchProvider = async () => {
+      if (provider) {
+        const providerData: ProviderSchema | null = await getProvider(
+          provider.Id
+        );
+        setCurrentProvider(providerData);
+      }
+    };
+    fetchProvider();
   }, [provider]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (currentProvider) {
-      console.log("Saving provider from modal:", currentProvider);
-      onSave(currentProvider);
+      if (currentProvider) {
+        const updatedProvider: ProviderSchema | null = await putProvider(
+          currentProvider
+        );
+        if (updatedProvider) {
+          onSave(updatedProvider);
+        }
+      }
     }
   };
 
@@ -87,10 +102,10 @@ const ProviderDetailsModal = ({
       <DialogContent className="sm:max-w-[625px]">
         <DialogHeader>
           <DialogTitle>Provider Details</DialogTitle>
-              </DialogHeader>
-              <DialogDescription>
-                  Fill in the details for the provider below.
-              </DialogDescription>
+        </DialogHeader>
+        <DialogDescription>
+          Fill in the details for the provider below.
+        </DialogDescription>
         {currentProvider && (
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
