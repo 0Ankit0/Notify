@@ -41,7 +41,7 @@ export const putMessage = async (message: MessageSchema): Promise<void> => {
 };
 
 export const postMessage = async (
-  message: MessageSchema
+  message: Omit<MessageSchema, "Id" | "CreatedAt">
 ): Promise<MessageSchema> => {
   const response = await api.post("/Post", message);
   return response.data;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,37 +19,22 @@ import Pagination from "@/components/table-pagination";
 import MessageTable from "./_components/message-table";
 import { MessageSchema } from "@/utils/messageSchema";
 import MessageDetailsModal from "./_components/message-details-modal";
-
-const initialMessages: MessageSchema[] = [
-  {
-    Id: "1",
-    Receiver: "user1@example.com",
-    Content: "Hello User 1",
-    Provider: "onesignal",
-    Status: "sent",
-    CreatedAt: new Date("2024-10-15"),
-  },
-  {
-      Id: "2",
-    Receiver: "user2@example.com",
-    Content: "Hello User 2",
-    Provider: "firebase",
-    Status: "failed",
-    CreatedAt: new Date("2024-10-20"),
-  },
-  {
-      Id: "3",
-    Receiver: "user3@example.com",
-    Content: "Hello User 3",
-    Provider: "custom",
-    Status: "pending",
-    CreatedAt: new Date("2024-10-10"),
-  },
-];
+import { add, addDays, subMonths } from "date-fns";
 
 export default function MessagePage() {
+    const [messages, setMessages] = useState<MessageSchema[]>();
+    useEffect(() => {
+        async function GetData() {
+            const messageDetails = await getMessages();
+            if (!messageDetails) {
+                throw new Error("Failed to fetch message details");
+            }
+            setMessages(messageDetails);
+        }
+        GetData();
+    },[]);
+
   const router = useRouter();
-    const [messages, setMessages] = useState<MessageSchema[]>(initialMessages);
   const {
     filteredItems: filteredMessages,
     dateRange,
@@ -59,8 +44,8 @@ export default function MessagePage() {
     searchTerm,
     setSearchTerm,
   } = useFilter(messages, {
-    from: new Date("2024-09-01"),
-    to: new Date("2024-10-31"),
+      from: subMonths(new Date(), 1),
+      to: addDays(new Date(), 1),
   });
     const [selectedMessage, setSelectedMessage] = useState<MessageSchema | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
