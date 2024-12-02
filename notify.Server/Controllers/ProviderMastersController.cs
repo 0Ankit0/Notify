@@ -123,7 +123,7 @@ namespace notify.Server.Controllers
                 }
             }
 
-            return NoContent();
+            return StatusCode(StatusCodes.Status200OK, providerModel);
         }
         
         // POST: api/ProviderMasters

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -108,6 +109,21 @@ namespace notify.Server.Controllers
 
             return CreatedAtAction("GetUserToken", new { id = userToken.Id }, userTokenModel);
         }
+        [HttpPost("RequestToken")]
+        public ActionResult RequestToken()
+        {
+            try
+            {
+                string newToken = Guid.NewGuid().ToString();
+                return StatusCode(StatusCodes.Status201Created, newToken);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while generating the token.");
+            }
+        }
+
 
         // DELETE: api/UserTokens/5
         [HttpDelete("{id}")]

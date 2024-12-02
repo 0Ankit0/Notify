@@ -23,6 +23,8 @@ import { PlusCircle, RefreshCw } from "lucide-react";
 import PageContainer from "@/components/layout/page-container";
 import ApiKeyInput from "../_components/api_key";
 import { ProviderSchema as Provider } from "@/utils/providerSchema";
+import { generateNewToken } from "@/app/api/data/UserTokens";
+import { postProvider } from "@/app/api/data/Provider";
 
 export default function CreateProviderPage() {
   const router = useRouter();
@@ -31,38 +33,33 @@ export default function CreateProviderPage() {
   >({
     Alias: "",
     Token: "",
-    Provider: "onesignal",
+    Provider: "0",
     Secret: "",
   });
 
-  const getSecretHint = (provider: "onesignal" | "firebase" | "custom") => {
+  const getSecretHint = (provider: "0" | "1" | "2") => {
     switch (provider) {
-      case "onesignal":
+      case "0":
         return "Enter JSON with app_id and api_key";
-      case "firebase":
-        return "Enter JSON with project_id and server_key";
-      case "custom":
+      case "1":
+        return "Enter JSON That contains the server key and other details."
+      case "2":
         return "Enter custom secret data as JSON";
     }
   };
 
   const handleAddProvider = () => {
-    // Here you would typically send the new provider data to your backend
-    // For now, we'll just simulate adding it and navigate back to the main page
-    const newProviderWithId: Provider = {
-      ...newProvider,
-      Id: `${Date.now()}`,
-      CreatedAt: new Date(),
-    };
-    console.log("New provider added:", newProviderWithId);
+ 
+      const response = postProvider(newProvider);
     router.push("/providers");
   };
 
-  const generateApiKey = () => {
-    const newToken = `${newProvider.Provider}_${Date.now()}_${Math.random()
-      .toString(36)
-      .substr(2, 9)}`;
-    setNewProvider({ ...newProvider, Token: newToken });
+  const generateApiKey =async () => {
+      const userConfirmed = window.confirm("Are you sure you want to generate a new API key?The previous one won't work anymore.");
+      if (userConfirmed) {
+          const newToken = await generateNewToken();
+          setNewProvider({ ...newProvider, Token: newToken });
+      }
   };
 
   return (

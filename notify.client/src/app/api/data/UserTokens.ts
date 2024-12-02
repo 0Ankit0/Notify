@@ -25,7 +25,7 @@ api.interceptors.request.use(
     }
   );
 
-  export const generateNewToken = async (): Promise<string> => {
-    const response = await api.put("/Put");
+export const generateNewToken = async (): Promise<string> => {
+    const response = await api.post("/RequestToken");
     return response.data;
   }

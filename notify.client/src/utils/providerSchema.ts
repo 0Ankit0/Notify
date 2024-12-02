@@ -5,7 +5,7 @@ export const provider = z.object({
     Alias: z.string().min(1, "Receiver is required"),
     Token: z.string().min(1, "Receiver is required"),
     Secret: z.string().min(1, "Content is required"),
-    Provider: z.enum(["onesignal", "firebase", "custom"]),
+    Provider: z.string(),
     CreatedAt: z.date()
 });
 
