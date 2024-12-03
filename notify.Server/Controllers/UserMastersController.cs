@@ -16,7 +16,7 @@ using Notify.Server.Data.Users;
 
 namespace notify.Server.Controllers
 {
-    [Route("api/User/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class UserMastersController : ControllerBase
@@ -121,7 +121,7 @@ namespace notify.Server.Controllers
             return CreatedAtAction("GetUserMaster", new { id = userMaster.UserId }, userMaster);
         }
 
-        [HttpPost]
+        [HttpPost("Login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {

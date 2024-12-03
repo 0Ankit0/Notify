@@ -14,7 +14,7 @@ using Notify.Server.Data.Users;
 
 namespace notify.Server.Controllers
 {
-    [Route("api/Providers/[action]")]
+    [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class ProviderMastersController : ControllerBase

@@ -41,7 +41,7 @@ namespace notify.Server.Controllers
                 Id = m.Id,
                 Receiver = m.Receiver,
                 Content = m.Content,
-                Provider = m.Provider.ProviderName,
+                Provider = m.Provider.Alias,
                 Status = m.Status.ToString(),
                 CreatedAt = m.CreatedAt
             }).ToListAsync();
