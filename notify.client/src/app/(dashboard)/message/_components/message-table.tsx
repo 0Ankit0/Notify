@@ -8,7 +8,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Message } from "@/utils/messageSchema";
+import { MessageSchema as Message } from "@/utils/messageSchema";
+import { Badge } from "@/components/ui/badge";
 
 type MessageTableProps = {
   messages: Message[];
@@ -16,6 +17,16 @@ type MessageTableProps = {
 };
 
 const MessageTable = ({ messages, onViewDetails }: MessageTableProps) => {
+  const getStatusBadgeClass = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "failed":
+        return "bg-red-600 text-white hover:bg-red-300";
+      case "sent":
+        return "bg-green-600 text-white hover:bg-green-300";
+      default:
+        return "bg-blue-600 text-white hover:bg-blue-300";
+    }
+  };
   return (
     <div className="overflow-x-auto w-full">
       <Table>
@@ -35,8 +46,12 @@ const MessageTable = ({ messages, onViewDetails }: MessageTableProps) => {
               <TableCell>{message.Receiver}</TableCell>
               <TableCell>{message.Content}</TableCell>
               <TableCell>{message.Provider}</TableCell>
-              <TableCell>{message.Status}</TableCell>
-              <TableCell>{message.CreatedAt.toLocaleDateString()}</TableCell>
+              <TableCell>
+                <Badge className={getStatusBadgeClass(message.Status)}>
+                  {message.Status}
+                </Badge>
+              </TableCell>
+              <TableCell>{new Date(message.CreatedAt).toString()}</TableCell>
               <TableCell>
                 <Button
                   variant="outline"

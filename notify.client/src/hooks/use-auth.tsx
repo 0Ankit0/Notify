@@ -44,7 +44,7 @@ export function useAuth() {
   const login = async (username: string, password: string) => {
     try {
       const userData = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/User/Login`,
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/UserMasters/Login`,
         {
           method: "POST",
           headers: {

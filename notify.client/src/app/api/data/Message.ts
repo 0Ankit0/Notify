@@ -27,12 +27,12 @@ api.interceptors.request.use(
 );
 
 export const getMessages = async (): Promise<MessageSchema[]> => {
-  const response = await api.get("/Get");
+  const response = await api.get("/");
   return response.data;
 };
 
 export const getMessage = async (id: string): Promise<MessageSchema> => {
-  const response = await api.get(`/Get/${id}`);
+  const response = await api.get(`/${id}`);
   return response.data;
 };
 
@@ -43,10 +43,10 @@ export const putMessage = async (message: MessageSchema): Promise<void> => {
 export const postMessage = async (
   message: Omit<MessageSchema, "Id" | "CreatedAt">
 ): Promise<MessageSchema> => {
-  const response = await api.post("/Post", message);
+  const response = await api.post("/", message);
   return response.data;
 };
 
 export const deleteMessage = async (id: string): Promise<void> => {
-  await api.delete(`/Delete/${id}`);
+  await api.delete(`/${id}`);
 };

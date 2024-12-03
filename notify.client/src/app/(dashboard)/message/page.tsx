@@ -20,19 +20,20 @@ import MessageTable from "./_components/message-table";
 import { MessageSchema } from "@/utils/messageSchema";
 import MessageDetailsModal from "./_components/message-details-modal";
 import { add, addDays, subMonths } from "date-fns";
+import { getMessages } from "@/app/api/data/Message";
 
 export default function MessagePage() {
-    const [messages, setMessages] = useState<MessageSchema[]>();
-    useEffect(() => {
-        async function GetData() {
-            const messageDetails = await getMessages();
-            if (!messageDetails) {
-                throw new Error("Failed to fetch message details");
-            }
-            setMessages(messageDetails);
-        }
-        GetData();
-    },[]);
+  const [messages, setMessages] = useState<MessageSchema[]>([]);
+  useEffect(() => {
+    async function GetData() {
+      const messageDetails = await getMessages();
+      if (!messageDetails) {
+        throw new Error("Failed to fetch message details");
+      }
+      setMessages(messageDetails);
+    }
+    GetData();
+  }, []);
 
   const router = useRouter();
   const {
@@ -44,23 +45,25 @@ export default function MessagePage() {
     searchTerm,
     setSearchTerm,
   } = useFilter(messages, {
-      from: subMonths(new Date(), 1),
-      to: addDays(new Date(), 1),
+    from: subMonths(new Date(), 1),
+    to: addDays(new Date(), 1),
   });
-    const [selectedMessage, setSelectedMessage] = useState<MessageSchema | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<MessageSchema | null>(
+    null
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-    const handleViewDetails = (message: MessageSchema) => {
+  const handleViewDetails = (message: MessageSchema) => {
     setSelectedMessage(message);
     setIsModalOpen(true);
   };
 
-    const handleSave = (message: MessageSchema) => {
-    setMessages(messages.map((m) => (m.Id === message.Id ? message : m)));
-    setIsModalOpen(false);
-  };
+  // const handleSave = (message: MessageSchema) => {
+  //   setMessages(messages.map((m) => (m.Id === message.Id ? message : m)));
+  //   setIsModalOpen(false);
+  // };
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -128,7 +131,7 @@ export default function MessagePage() {
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
           message={selectedMessage}
-          onSave={handleSave}
+          // onSave={handleSave}
         />
       </div>
     </PageContainer>

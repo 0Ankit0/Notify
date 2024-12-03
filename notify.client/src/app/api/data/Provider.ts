@@ -6,7 +6,7 @@ dotenv.config();
 
 const api = axios.create({
     baseURL:
-        process.env.NOTIFY_API_URL || "https://localhost:44320/api" + "/Providers",
+        process.env.NOTIFY_API_URL || "https://localhost:44320/api" + "/ProviderMasters",
 });
 
 // Add a request interceptor to include the authorization header
@@ -42,7 +42,7 @@ api.interceptors.request.use(
 // );
 
 export const getProviders = async (): Promise<ProviderSchema[]> => {
-    const response = await api.get("/Get");
+    const response = await api.get("/");
     return response.data;
 };
 
