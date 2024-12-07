@@ -11,6 +11,7 @@ using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Providers;
 using Notify.Server.Data.Users;
+using Notify.Server.Models;
 
 namespace notify.Server.Controllers
 {
@@ -92,6 +93,7 @@ namespace notify.Server.Controllers
         [HttpPut]
         public async Task<IActionResult> Put([FromBody] ProviderModel providerModel)
         {
+
             int id = providerModel.ProviderId ?? 0;
             if (id ==0)
             {
@@ -102,8 +104,25 @@ namespace notify.Server.Controllers
             {
                 return NotFound();
             }
+            var user = HttpContext.Items["User"] as AuthenticatedUser;
+            var userToken = await _context.UserTokens.FirstOrDefaultAsync(ut => ut.ProviderId == id);
+            if (userToken is not null){
+                userToken.Token = providerModel.Token;
+                _context.Entry(userToken).State = EntityState.Modified;
+            }
+            else
+            {
+                userToken = new UserToken
+                {
+                    ProviderId = id,
+                    Token = providerModel.Token,
+                    UserId = int.Parse(user.UserId),
+                    CreatedAt = DateTime.Now
+                };
+                _context.UserTokens.Add(userToken);
+            }
             providerMaster.Alias = providerModel.Alias;
-            providerMaster.Provider = providerModel.Provider;
+            providerMaster.Provider = (ProviderEnum)providerModel.Provider;
             providerMaster.Secret = providerModel.Secret;
             _context.Entry(providerMaster).State = EntityState.Modified;
 
@@ -132,7 +151,7 @@ namespace notify.Server.Controllers
         public async Task<ActionResult<ProviderModel>> Post([FromBody] ProviderModel providerModel)
         {
             ProviderMaster providerMaster = new ProviderMaster();
-            providerMaster.Provider = providerModel.Provider;
+            providerMaster.Provider = (ProviderEnum)providerModel.Provider;
             providerMaster.Secret = providerModel.Secret;
             providerMaster.Alias = providerModel.Alias;
             providerMaster.CreatedAt = DateTime.Now;
