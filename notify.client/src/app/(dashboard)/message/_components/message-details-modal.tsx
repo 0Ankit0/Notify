@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -38,6 +39,9 @@ MessageDetailsModalProps) => {
         <DialogHeader>
           <DialogTitle>Message Details</DialogTitle>
         </DialogHeader>
+        <DialogDescription>
+          Fill in the details for the message below.
+        </DialogDescription>
         {currentMessage && (
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">

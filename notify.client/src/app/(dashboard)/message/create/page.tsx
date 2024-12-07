@@ -82,6 +82,7 @@ export default function CreateMessagePage() {
 
     try {
       const response = await postMessage(messageData);
+      console.log("Message sent:", response);
       if (!response) {
         setError("Failed to send message. Please try again.");
       }
