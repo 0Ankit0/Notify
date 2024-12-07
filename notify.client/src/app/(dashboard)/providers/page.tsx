@@ -56,13 +56,13 @@ export default function NotificationProvidersPage() {
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const handleViewDetails = (provider: ProviderSchema) => {
-    console.log("Viewing details for provider:", provider);
+    // console.log("Viewing details for provider:", provider);
     setSelectedProvider(provider);
     setIsModalOpen(true);
   };
 
   const handleSave = (provider: ProviderSchema) => {
-    console.log("Saving provider:", provider);
+    // console.log("Saving provider:", provider);
     setProviders((prevProviders) =>
       prevProviders.map((p) => (p.Id === provider.Id ? provider : p))
     );

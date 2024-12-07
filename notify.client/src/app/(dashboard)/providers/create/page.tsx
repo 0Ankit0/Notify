@@ -32,6 +32,7 @@ export default function CreateProviderPage() {
     Omit<Provider, "Id" | "CreatedAt">
   >({
     Alias: "",
+    ProviderId: "",
     Token: "",
     Provider: "0",
     Secret: "",
@@ -42,24 +43,25 @@ export default function CreateProviderPage() {
       case "0":
         return "Enter JSON with app_id and api_key";
       case "1":
-        return "Enter JSON That contains the server key and other details."
+        return "Enter JSON That contains the server key and other details.";
       case "2":
         return "Enter custom secret data as JSON";
     }
   };
 
   const handleAddProvider = () => {
- 
-      const response = postProvider(newProvider);
+    const response = postProvider(newProvider);
     router.push("/providers");
   };
 
-  const generateApiKey =async () => {
-      const userConfirmed = window.confirm("Are you sure you want to generate a new API key?The previous one won't work anymore.");
-      if (userConfirmed) {
-          const newToken = await generateNewToken();
-          setNewProvider({ ...newProvider, Token: newToken });
-      }
+  const generateApiKey = async () => {
+    const userConfirmed = window.confirm(
+      "Are you sure you want to generate a new API key?The previous one won't work anymore."
+    );
+    if (userConfirmed) {
+      const newToken = await generateNewToken();
+      setNewProvider({ ...newProvider, Token: newToken });
+    }
   };
 
   return (
@@ -105,9 +107,9 @@ export default function CreateProviderPage() {
                       <SelectValue placeholder="Select provider" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="onesignal">OneSignal</SelectItem>
-                      <SelectItem value="firebase">Firebase</SelectItem>
-                      <SelectItem value="custom">Custom WebPush</SelectItem>
+                      <SelectItem value="0">OneSignal</SelectItem>
+                      <SelectItem value="1">Firebase</SelectItem>
+                      <SelectItem value="2">Custom WebPush</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

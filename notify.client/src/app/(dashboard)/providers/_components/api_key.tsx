@@ -7,7 +7,7 @@ interface ApiKeyInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   apiKey: string;
 }
 
-const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ apiKey, ...props }) => {
+const ApiKeyInput: React.FC<ApiKeyInputProps> = ({ apiKey = "", ...props }) => {
   const [isSecretVisible, setIsSecretVisible] = useState(false);
   const [apiKeyVal, setApiKey] = useState(apiKey);
   const handleApiKeyChange = (event: React.ChangeEvent<HTMLInputElement>) => {

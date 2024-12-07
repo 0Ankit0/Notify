@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ProviderSchema } from "@/utils/providerSchema";
+import { ProviderSchema,ProviderSaveSchema } from "@/utils/providerSchema";
 import dotenv from "dotenv";
 import CryptoJS from "crypto-js";
 dotenv.config();
@@ -30,16 +30,16 @@ api.interceptors.request.use(
 );
 
 // Add a response interceptor to log the response
-// api.interceptors.response.use(
-//    (response) => {
-//        console.log("Response:", response);
-//        return response;
-//    },
-//    (error) => {
-//        console.error("Response Error:", error);
-//        return Promise.reject(error);
-//    }
-// );
+api.interceptors.response.use(
+   (response) => {
+       console.log("Response:", response);
+       return response;
+   },
+   (error) => {
+       console.error("Response Error:", error);
+       return Promise.reject(error);
+   }
+);
 
 export const getProviders = async (): Promise<ProviderSchema[]> => {
     const response = await api.get("/");
@@ -51,7 +51,7 @@ export const getProvider = async (id: string): Promise<ProviderSchema> => {
     return response.data;
 };
 
-export const putProvider = async (provider: ProviderSchema): Promise<ProviderSchema |null> => {
+export const putProvider = async (provider: ProviderSaveSchema): Promise<ProviderSchema |null> => {
     const response = await api.put("/", provider);
     return response.data;
 };

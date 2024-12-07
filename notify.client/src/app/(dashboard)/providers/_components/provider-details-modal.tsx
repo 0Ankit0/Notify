@@ -20,8 +20,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Save, RefreshCw } from "lucide-react";
-import { ProviderSchema } from "@/utils/providerSchema";
+import { ProviderSchema, ProviderSaveSchema } from "@/utils/providerSchema";
 import { getProvider, putProvider } from "@/app/api/data/Provider";
+import { parse } from "path";
 
 type ProviderDetailsModalProps = {
   isOpen: boolean;
@@ -55,8 +56,19 @@ const ProviderDetailsModal = ({
   const handleSave = async () => {
     if (currentProvider) {
       if (currentProvider) {
+        const providerPutData: ProviderSaveSchema = {
+          ProviderId: currentProvider.Id,
+          Alias: currentProvider.Alias,
+          Token: currentProvider.Token,
+          Secret: currentProvider.Secret,
+          Provider: parseInt(currentProvider.Provider),
+          CreatedAt: currentProvider.CreatedAt,
+        };
+        // currentProvider.Provider=parseInt(currentProvider.Provider as string);
+        console.log(currentProvider);
+
         const updatedProvider: ProviderSchema | null = await putProvider(
-          currentProvider
+          providerPutData
         );
         if (updatedProvider) {
           onSave(updatedProvider);
@@ -131,7 +143,7 @@ const ProviderDetailsModal = ({
               <div className="col-span-3 flex">
                 <Input
                   id="Token"
-                  value={currentProvider.Token}
+                  value={currentProvider.Token || ""}
                   readOnly
                   className="flex-grow"
                 />
@@ -163,9 +175,9 @@ const ProviderDetailsModal = ({
                 </SelectTrigger>
 
                 <SelectContent>
-                  <SelectItem value="onesignal">OneSignal</SelectItem>
-                  <SelectItem value="firebase">Firebase</SelectItem>
-                  <SelectItem value="custom">Custom WebPush</SelectItem>
+                  <SelectItem value="0">OneSignal</SelectItem>
+                  <SelectItem value="1">Firebase</SelectItem>
+                  <SelectItem value="2">Custom WebPush</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -24,6 +24,19 @@ api.interceptors.request.use(
       return Promise.reject(error);
     }
   );
+  
+  
+// Add a response interceptor to log the response
+// api.interceptors.response.use(
+//    (response) => {
+//        console.log("Response:", response);
+//        return response;
+//    },
+//    (error) => {
+//        console.error("Response Error:", error);
+//        return Promise.reject(error);
+//    }
+// );
 
 export const generateNewToken = async (): Promise<string> => {
     const response = await api.post("/RequestToken");
