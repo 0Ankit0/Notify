@@ -1,5 +1,5 @@
 import axios from "axios";
-import { MessageSchema } from "@/utils/messageSchema";
+import { MessageSaveSchema, MessageSchema } from "@/utils/messageSchema";
 import CryptoJS from "crypto-js";
 const api = axios.create({
   baseURL:
@@ -49,13 +49,17 @@ export const getMessage = async (id: string): Promise<MessageSchema> => {
 };
 
 export const putMessage = async (message: MessageSchema): Promise<void> => {
-  await api.put("/Put", message);
+  await api.put("/", message);
 };
 
 export const postMessage = async (
-  message: Omit<MessageSchema, "Id" | "CreatedAt">
+  message: Omit<MessageSaveSchema, "Id" | "CreatedAt">
 ): Promise<MessageSchema> => {
-  const response = await api.post("/", message);
+  const response = await api.post("/", message,{
+    headers:{
+      ApiToken:message.Provider
+    }
+  });
   return response.data;
 };
 

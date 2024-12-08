@@ -30,16 +30,16 @@ api.interceptors.request.use(
 );
 
 // Add a response interceptor to log the response
-api.interceptors.response.use(
-   (response) => {
-       console.log("Response:", response);
-       return response;
-   },
-   (error) => {
-       console.error("Response Error:", error);
-       return Promise.reject(error);
-   }
-);
+// api.interceptors.response.use(
+//    (response) => {
+//        console.log("Response:", response);
+//        return response;
+//    },
+//    (error) => {
+//        console.error("Response Error:", error);
+//        return Promise.reject(error);
+//    }
+// );
 
 export const getProviders = async (): Promise<ProviderSchema[]> => {
     const response = await api.get("/");
@@ -57,7 +57,7 @@ export const putProvider = async (provider: ProviderSaveSchema): Promise<Provide
 };
 
 export const postProvider = async (
-    provider: ProviderSchema
+    provider: ProviderSaveSchema
 ): Promise<ProviderSchema> => {
     const response = await api.post("/", provider);
     return response.data;

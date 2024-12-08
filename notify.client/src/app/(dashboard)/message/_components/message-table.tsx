@@ -33,6 +33,7 @@ const MessageTable = ({ messages, onViewDetails }: MessageTableProps) => {
         <TableHeader>
           <TableRow>
             <TableHead className="w-1/6">Receiver</TableHead>
+            <TableHead className="w-1/6">Title</TableHead>
             <TableHead className="w-1/6">Message</TableHead>
             <TableHead className="w-1/6">Provider</TableHead>
             <TableHead className="w-1/6">Status</TableHead>
@@ -44,7 +45,13 @@ const MessageTable = ({ messages, onViewDetails }: MessageTableProps) => {
           {messages.map((message) => (
             <TableRow key={message.Id}>
               <TableCell>{message.Receiver}</TableCell>
-              <TableCell>{message.Content}</TableCell>
+              <TableCell>{message.Title}</TableCell>
+              <TableCell>
+                {" "}
+                {message.Content.length > 10
+                  ? `${message.Content.substring(0, 10)}...`
+                  : message.Content}
+              </TableCell>
               <TableCell>{message.Provider}</TableCell>
               <TableCell>
                 <Badge className={getStatusBadgeClass(message.Status)}>

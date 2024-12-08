@@ -22,9 +22,13 @@ import {
 import { PlusCircle, RefreshCw } from "lucide-react";
 import PageContainer from "@/components/layout/page-container";
 import ApiKeyInput from "../_components/api_key";
-import { ProviderSchema as Provider } from "@/utils/providerSchema";
+import {
+  ProviderSchema as Provider,
+  ProviderSaveSchema,
+} from "@/utils/providerSchema";
 import { generateNewToken } from "@/app/api/data/UserTokens";
 import { postProvider } from "@/app/api/data/Provider";
+import { date } from "zod";
 
 export default function CreateProviderPage() {
   const router = useRouter();
@@ -50,7 +54,14 @@ export default function CreateProviderPage() {
   };
 
   const handleAddProvider = () => {
-    const response = postProvider(newProvider);
+    const providerPostData: Omit<ProviderSaveSchema, "ProviderId"> = {
+      Alias: newProvider.Alias,
+      Token: newProvider.Token,
+      Secret: newProvider.Secret,
+      Provider: parseInt(newProvider.Provider),
+      CreatedAt: new Date(),
+    };
+    const response = postProvider(providerPostData);
     router.push("/providers");
   };
 
@@ -61,6 +72,14 @@ export default function CreateProviderPage() {
     if (userConfirmed) {
       const newToken = await generateNewToken();
       setNewProvider({ ...newProvider, Token: newToken });
+    }
+  };
+
+  const formatJSON = (json: string) => {
+    try {
+      return JSON.stringify(JSON.parse(json), null, 2);
+    } catch (e) {
+      return json;
     }
   };
 
@@ -125,9 +144,11 @@ export default function CreateProviderPage() {
                 <div>
                   <Label htmlFor="new-api-key">Token</Label>
                   <div className="flex space-x-2">
-                    <ApiKeyInput
+                    <Input
+                      id="Token"
                       className="w-full"
-                      apiKey={newProvider.Token}
+                      readOnly
+                      value={newProvider.Token || ""}
                       onChange={(e) =>
                         setNewProvider({
                           ...newProvider,
@@ -160,7 +181,7 @@ export default function CreateProviderPage() {
                   <Label htmlFor="new-secret">Secret</Label>
                   <Textarea
                     id="new-secret"
-                    value={newProvider.Secret}
+                    value={formatJSON(newProvider.Secret)}
                     onChange={(e) =>
                       setNewProvider({ ...newProvider, Secret: e.target.value })
                     }

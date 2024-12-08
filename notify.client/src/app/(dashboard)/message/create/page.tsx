@@ -23,7 +23,7 @@ import {
 import PageContainer from "@/components/layout/page-container";
 import { CheckCircle } from "lucide-react";
 import { postMessage } from "@/app/api/data/Message";
-import { MessageSchema } from "@/utils/messageSchema";
+import { MessageSaveSchema, MessageSchema } from "@/utils/messageSchema";
 import { getProviders } from "@/app/api/data/Provider";
 import { ProviderSchema } from "@/utils/providerSchema";
 
@@ -34,6 +34,7 @@ export default function CreateMessagePage() {
   >({
     Receiver: "",
     Content: "",
+    Title: "",
     Provider: "",
     Status: "pending",
   });
@@ -81,6 +82,11 @@ export default function CreateMessagePage() {
     }
 
     try {
+      const MessagePost: MessageSaveSchema = {
+        Receiver: messageData.Receiver,
+        Content: messageData.Content,
+        Provider: parseInt(messageData.Provider),
+      };
       const response = await postMessage(messageData);
       console.log("Message sent:", response);
       if (!response) {
@@ -100,6 +106,7 @@ export default function CreateMessagePage() {
     setMessageData({
       Receiver: "",
       Content: "",
+      Title: "",
       Provider: "",
       Status: "pending",
     });
@@ -119,6 +126,16 @@ export default function CreateMessagePage() {
               type="text"
               placeholder="Enter receiver's email or ID"
               value={messageData.Receiver}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="Title">Title</Label>
+            <Input
+              id="Title"
+              type="text"
+              placeholder="Enter Title of the message"
+              value={messageData.Title}
               onChange={handleInputChange}
             />
           </div>
@@ -143,7 +160,7 @@ export default function CreateMessagePage() {
               </SelectTrigger>
               <SelectContent>
                 {providers.map((provider) => (
-                  <SelectItem key={provider.Id} value={provider.Id}>
+                  <SelectItem key={provider.Id} value={provider.Token}>
                     {provider.Alias}
                   </SelectItem>
                 ))}
