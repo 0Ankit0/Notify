@@ -40,6 +40,7 @@ namespace notify.Server.Controllers
             {
                 Id = m.Id,
                 Receiver = m.Receiver,
+                Title=m.Title,
                 Content = m.Content,
                 Provider = m.Provider.Alias,
                 Status = m.Status.ToString(),

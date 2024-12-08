@@ -150,14 +150,28 @@ namespace notify.Server.Controllers
         [HttpPost]
         public async Task<ActionResult<ProviderModel>> Post([FromBody] ProviderModel providerModel)
         {
-            ProviderMaster providerMaster = new ProviderMaster();
-            providerMaster.Provider = (ProviderEnum)providerModel.Provider;
-            providerMaster.Secret = providerModel.Secret;
-            providerMaster.Alias = providerModel.Alias;
-            providerMaster.CreatedAt = DateTime.Now;
+            var user = HttpContext.Items["User"] as AuthenticatedUser;
+
+            ProviderMaster providerMaster = new ProviderMaster
+            {
+                Provider = (ProviderEnum)providerModel.Provider,
+                Secret = providerModel.Secret,
+                Alias = providerModel.Alias,
+                CreatedAt = DateTime.Now
+            };
             //_customMethods.MapProperties(providerModel, providerMaster);
 
             _context.ProviderMasters.Add(providerMaster);
+            await _context.SaveChangesAsync(); 
+
+            var userToken = new UserToken
+            {
+                ProviderId = providerMaster.ProviderId,
+                Token = providerModel.Token,
+                UserId = int.Parse(user.UserId),
+                CreatedAt = DateTime.Now
+            };
+            _context.UserTokens.Add(userToken);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("Get", new { id = providerMaster.ProviderId }, providerModel);
