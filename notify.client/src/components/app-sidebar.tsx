@@ -3,6 +3,7 @@ import * as React from "react";
 import {
   AudioWaveform,
   BookOpen,
+  Home,
   MessageCircle,
   Command,
   GalleryVerticalEnd,
@@ -44,6 +45,11 @@ const data = {
     },
   ],
   navMain: [
+    {
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: Home,
+    },
     {
       title: "Providers",
       url: "/providers",
