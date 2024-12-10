@@ -10,6 +10,13 @@ export const Message = z.object({
     CreatedAt: z.date()
 });
 
+const MessageReport = z.object({
+    SuccessCount: z.number(),
+    FailedCount: z.number(),
+    Date: z.date()
+});
+
+export type MessageReportSchema = z.infer<typeof MessageReport>;
 const MessageSave = Message.omit({ Id: true, CreatedAt: true,Status:true });
 export type MessageSchema = z.infer<typeof Message>;
 export type MessageSaveSchema = z.infer<typeof MessageSave>;

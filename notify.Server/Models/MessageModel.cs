@@ -10,4 +10,10 @@
         public string? Status { get; set; }
         public DateTime? CreatedAt { get; set; }
     }
+    public class MessageStatusReport
+    {
+        public DateTime? Date { get; set; }
+        public int? SuccessCount { get; set; }
+        public int? FailedCount { get; set; }
+    }
 }

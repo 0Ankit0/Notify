@@ -47,6 +47,39 @@ namespace notify.Server.Controllers
                 CreatedAt = m.CreatedAt
             }).ToListAsync();
         }
+        [HttpGet("GetStatusReport")]
+        public async Task<ActionResult<IEnumerable<MessageStatusReport>>> GetStatusReport(DateTime startDate, DateTime endDate)
+        {
+            var report = await _context.Messages
+                .Where(m => m.CreatedAt >= startDate && m.CreatedAt <= endDate)
+                .GroupBy(m => m.CreatedAt.Date)
+                .Select(g => new MessageStatusReport
+                {
+                    Date = g.Key,
+                    SuccessCount = g.Count(m => m.Status == MessageStatus.Sent),
+                    FailedCount = g.Count(m => m.Status == MessageStatus.Failed)
+                })
+                .ToListAsync();
+
+            return Ok(report);
+        }
+        [HttpGet("GetRecent")]
+        public async Task<ActionResult<IEnumerable<MessageModel>>> GetRecent()
+        {
+            return await _context.Messages
+                 .OrderByDescending(m => m.CreatedAt)
+                 .Take(5)
+                 .Select(m => new MessageModel
+                {
+                    Id = m.Id,
+                    Receiver = m.Receiver,
+                    Title=m.Title,
+                    Content = m.Content,
+                    Provider = m.Provider.Alias,
+                    Status = m.Status.ToString(),
+                    CreatedAt = m.CreatedAt
+                }).ToListAsync();
+        }
 
         // GET: api/Messages/5
         [HttpGet("{id}")]
