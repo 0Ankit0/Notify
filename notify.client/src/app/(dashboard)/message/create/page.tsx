@@ -124,7 +124,7 @@ export default function CreateMessagePage() {
             <Input
               id="Receiver"
               type="text"
-              placeholder="Enter receiver's email or ID"
+              placeholder="Enter receiver's Token"
               value={messageData.Receiver}
               onChange={handleInputChange}
             />

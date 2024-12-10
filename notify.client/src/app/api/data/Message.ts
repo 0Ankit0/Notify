@@ -1,6 +1,7 @@
 import axios from "axios";
-import { MessageSaveSchema, MessageSchema } from "@/utils/messageSchema";
+import { MessageSaveSchema, MessageSchema,MessageReportSchema } from "@/utils/messageSchema";
 import CryptoJS from "crypto-js";
+import { DateRange } from "react-day-picker";
 const api = axios.create({
   baseURL:
     process.env.NOTIFY_API_URL || "https://localhost:44320/api" + "/Messages",
@@ -28,18 +29,32 @@ api.interceptors.request.use(
 
 
 // Add a response interceptor to log the response
-// api.interceptors.response.use(
-//    (response) => {
-//        console.log("Response:", response);
-//        return response;
-//    },
-//    (error) => {
-//        console.error("Response Error:", error);
-//        return Promise.reject(error);
-//    }
-// );
+api.interceptors.response.use(
+   (response) => {
+       console.log("Response:", response);
+       return response;
+   },
+   (error) => {
+       console.error("Response Error:", error);
+       return Promise.reject(error);
+   }
+);
 export const getMessages = async (): Promise<MessageSchema[]> => {
   const response = await api.get("/");
+  return response.data;
+};
+export const getRecentMessages = async (): Promise<MessageSchema[]> => {
+  const response = await api.get("/GetRecent");
+  return response.data;
+};
+
+export const getStatusReport = async (dateRange:DateRange|undefined): Promise<MessageReportSchema[]> => {
+  const response = await api.get("/GetStatusReport",{
+    params:{
+      startDate:dateRange?.from,
+      endDate:dateRange?.to
+    }
+  });
   return response.data;
 };
 

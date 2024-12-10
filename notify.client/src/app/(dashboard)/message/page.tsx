@@ -108,7 +108,7 @@ export default function MessagePage() {
               size={18}
             />
           </div>
-          <Button onClick={() => router.push("/messages/create")}>
+          <Button onClick={() => router.push("/message/create")}>
             <PlusCircle className="mr-2 h-4 w-4" />
             Add Message
           </Button>
