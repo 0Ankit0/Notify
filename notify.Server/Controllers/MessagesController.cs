@@ -80,6 +80,24 @@ namespace notify.Server.Controllers
                     CreatedAt = m.CreatedAt
                 }).ToListAsync();
         }
+        [HttpGet("GetProviderBasedReport")]
+        public async Task<ActionResult<IEnumerable<ProviderBasedReport>>> GetProviderReport(DateTime startDate, DateTime endDate)
+        {
+            var report = await _context.Messages
+                .Where(m => m.CreatedAt >= startDate && m.CreatedAt <= endDate)
+                .GroupBy(m => m.Provider.Alias)
+                .Select(g => new ProviderBasedReport
+                {
+                    Provider = g.Key,
+                    TotalMessages = g.Count(),
+                    SuccessCount = g.Count(m => m.Status == MessageStatus.Sent),
+                    FailedCount = g.Count(m => m.Status == MessageStatus.Failed)
+                })
+                .ToListAsync();
+
+            return Ok(report);
+        }
+
 
         // GET: api/Messages/5
         [HttpGet("{id}")]

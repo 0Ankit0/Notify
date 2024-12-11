@@ -16,4 +16,12 @@
         public int? SuccessCount { get; set; }
         public int? FailedCount { get; set; }
     }
+    public class ProviderBasedReport
+    {
+        public string Provider { get; set; }
+        public int TotalMessages { get; set; }
+        public int SuccessCount { get; set; }
+        public int FailedCount { get; set; }
+    }
+
 }
