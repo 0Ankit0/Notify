@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import * as React from 'react';
-import { TrendingUp } from 'lucide-react';
-import { Label, Pie, PieChart } from 'recharts';
+import * as React from "react";
+import { TrendingUp } from "lucide-react";
+import { Label, Pie, PieChart } from "recharts";
 
 import {
   Card,
@@ -10,51 +10,82 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
-} from '@/components/ui/card';
+  CardTitle,
+} from "@/components/ui/card";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent
-} from '@/components/ui/chart';
-const chartData = [
-  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-  { browser: 'firefox', visitors: 287, fill: 'var(--color-firefox)' },
-  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-  { browser: 'other', visitors: 190, fill: 'var(--color-other)' }
-];
-
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { getProviderBasedReport } from "@/app/api/data/Message";
+import { MessageProviderReportSchema } from "@/utils/messageSchema";
+import { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
+// const chartData = [
+//   { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
+//   { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
+//   { browser: 'firefox', visitors: 287, fill: 'var(--color-firefox)' },
+//   { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
+//   { browser: 'other', visitors: 190, fill: 'var(--color-other)' }
+// ];
+interface PieChartProps {
+  dateRange: DateRange | undefined;
+}
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
 const chartConfig = {
   visitors: {
-    label: 'Visitors'
+    label: "Visitors",
   },
   chrome: {
-    label: 'Chrome',
-    color: 'hsl(var(--chart-1))'
+    label: "Chrome",
+    color: "hsl(var(--chart-1))",
   },
   safari: {
-    label: 'Safari',
-    color: 'hsl(var(--chart-2))'
+    label: "Safari",
+    color: "hsl(var(--chart-2))",
   },
   firefox: {
-    label: 'Firefox',
-    color: 'hsl(var(--chart-3))'
+    label: "Firefox",
+    color: "hsl(var(--chart-3))",
   },
   edge: {
-    label: 'Edge',
-    color: 'hsl(var(--chart-4))'
+    label: "Edge",
+    color: "hsl(var(--chart-4))",
   },
   other: {
-    label: 'Other',
-    color: 'hsl(var(--chart-5))'
-  }
+    label: "Other",
+    color: "hsl(var(--chart-5))",
+  },
 } satisfies ChartConfig;
 
-export function PieGraph() {
-  const totalVisitors = React.useMemo(() => {
-    return chartData.reduce((acc, curr) => acc + curr.visitors, 0);
+export function PieGraph({ dateRange }: PieChartProps) {
+  const [chartData, setChartData] = useState<MessageProviderReportSchema[]>([]);
+  useEffect(() => {
+    const fetchChartData = async () => {
+      try {
+        const response = await getProviderBasedReport(dateRange);
+        const processedData = response.map((item: any) => ({
+          ...item,
+          fill: getRandomColor(), // Assign random color
+        }));
+        setChartData(processedData);
+      } catch (error) {
+        console.error("Failed to fetch chart data:", error);
+      }
+    };
+
+    fetchChartData();
+  }, [dateRange]);
+  const totalMessages = React.useMemo(() => {
+    return chartData.reduce((acc, curr) => acc + curr.TotalMessages, 0);
   }, []);
 
   return (
@@ -75,14 +106,14 @@ export function PieGraph() {
             />
             <Pie
               data={chartData}
-              dataKey="visitors"
-              nameKey="browser"
+              dataKey="TotalMessages"
+              nameKey="Provider"
               innerRadius={60}
               strokeWidth={5}
             >
               <Label
                 content={({ viewBox }) => {
-                  if (viewBox && 'cx' in viewBox && 'cy' in viewBox) {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
                     return (
                       <text
                         x={viewBox.cx}
@@ -95,7 +126,7 @@ export function PieGraph() {
                           y={viewBox.cy}
                           className="fill-foreground text-3xl font-bold"
                         >
-                          {totalVisitors.toLocaleString()}
+                          {totalMessages.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}

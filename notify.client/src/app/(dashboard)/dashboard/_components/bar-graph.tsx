@@ -18,11 +18,11 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { DateRange } from "react-day-picker";
-import { getStatusReport } from "@/app/api/data/Message";
 import { MessageReportSchema } from "@/utils/messageSchema";
 
 export const description = "Total message count by date";
 interface BarGraphProps {
+  chartData: MessageReportSchema[];
   dateRange: DateRange | undefined;
 }
 
@@ -32,30 +32,15 @@ const chartConfig = {
   },
   SuccessCount: {
     label: "Success",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-2))",
   },
   FailedCount: {
     label: "Failed",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
-export function BarGraph({ dateRange }: BarGraphProps) {
-  const [chartData, setChartData] = useState<MessageReportSchema[]>([]);
-
-  useEffect(() => {
-    const fetchChartData = async () => {
-      try {
-        const response = await getStatusReport(dateRange);
-        setChartData(response);
-      } catch (error) {
-        console.error("Failed to fetch chart data:", error);
-      }
-    };
-
-    fetchChartData();
-  }, [dateRange]);
-
+export function BarGraph({ chartData, dateRange }: BarGraphProps) {
   const [activeChart, setActiveChart] =
     React.useState<keyof typeof chartConfig>("SuccessCount");
 

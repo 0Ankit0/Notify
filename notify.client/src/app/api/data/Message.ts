@@ -1,5 +1,5 @@
 import axios from "axios";
-import { MessageSaveSchema, MessageSchema,MessageReportSchema } from "@/utils/messageSchema";
+import { MessageSaveSchema, MessageSchema,MessageReportSchema, MessageProviderReportSchema } from "@/utils/messageSchema";
 import CryptoJS from "crypto-js";
 import { DateRange } from "react-day-picker";
 const api = axios.create({
@@ -29,16 +29,16 @@ api.interceptors.request.use(
 
 
 // Add a response interceptor to log the response
-api.interceptors.response.use(
-   (response) => {
-       console.log("Response:", response);
-       return response;
-   },
-   (error) => {
-       console.error("Response Error:", error);
-       return Promise.reject(error);
-   }
-);
+// api.interceptors.response.use(
+//    (response) => {
+//        console.log("Response:", response);
+//        return response;
+//    },
+//    (error) => {
+//        console.error("Response Error:", error);
+//        return Promise.reject(error);
+//    }
+// );
 export const getMessages = async (): Promise<MessageSchema[]> => {
   const response = await api.get("/");
   return response.data;
@@ -50,6 +50,16 @@ export const getRecentMessages = async (): Promise<MessageSchema[]> => {
 
 export const getStatusReport = async (dateRange:DateRange|undefined): Promise<MessageReportSchema[]> => {
   const response = await api.get("/GetStatusReport",{
+    params:{
+      startDate:dateRange?.from,
+      endDate:dateRange?.to
+    }
+  });
+  return response.data;
+};
+
+export const getProviderBasedReport = async (dateRange:DateRange|undefined): Promise<MessageProviderReportSchema[]> => {
+  const response = await api.get("/GetProviderBasedReport",{
     params:{
       startDate:dateRange?.from,
       endDate:dateRange?.to

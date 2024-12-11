@@ -16,6 +16,15 @@ const MessageReport = z.object({
     Date: z.date()
 });
 
+const MessageProviderReport = z.object({
+    Provider: z.string(),
+    TotalMessages: z.number(),
+    SuccessCount: z.number(),
+    FailedCount: z.number(),
+    fill: z.string()
+});
+
+export type MessageProviderReportSchema = z.infer<typeof MessageProviderReport>;
 export type MessageReportSchema = z.infer<typeof MessageReport>;
 const MessageSave = Message.omit({ Id: true, CreatedAt: true,Status:true });
 export type MessageSchema = z.infer<typeof Message>;
