@@ -13,7 +13,7 @@ export default function DashboardLayout({
       <SidebarProvider>
         <div className="flex h-screen w-full">
           <AppSidebar />
-          <main className="flex-1 overflow-auto w-full">
+          <main className="flex-1 overflow-hidden w-full">
             <SidebarTrigger />
             <div className="w-full h-full">
               <AuthWrapper>{children}</AuthWrapper>

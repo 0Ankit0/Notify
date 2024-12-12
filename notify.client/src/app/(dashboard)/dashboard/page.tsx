@@ -42,7 +42,7 @@ export default function Page() {
   const { user } = useAuthContext();
 
   return (
-    <PageContainer scrollable>
+    <PageContainer>
       <div className="space-y-2">
         <div className="flex items-center justify-between space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">
@@ -50,18 +50,11 @@ export default function Page() {
           </h2>
           <div className="hidden items-center space-x-2 md:flex">
             <CalendarDateRangePicker date={dateRange} setDate={setDateRange} />
-            <Button>Download</Button>
+            {/* <Button>Download</Button> */}
           </div>
         </div>
-        {/* <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="analytics" disabled>
-              Analytics
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent value="overview" className="space-y-4"> */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+
+        {/* <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -161,7 +154,7 @@ export default function Page() {
               </p>
             </CardContent>
           </Card>
-        </div>
+        </div> */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-7">
           <div className="col-span-4">
             <BarGraph chartData={chartData} dateRange={dateRange} />
@@ -179,11 +172,9 @@ export default function Page() {
             <AreaGraph chartData={chartData} dateRange={dateRange} />
           </div>
           <div className="col-span-4 md:col-span-3">
-            <PieGraph />
+            <PieGraph dateRange={dateRange} />
           </div>
         </div>
-        {/* </TabsContent>
-        </Tabs> */}
       </div>
     </PageContainer>
   );

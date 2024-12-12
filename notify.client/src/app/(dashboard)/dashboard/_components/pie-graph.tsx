@@ -40,43 +40,53 @@ const getRandomColor = () => {
   }
   return color;
 };
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "hsl(var(--chart-1))",
-  },
-  safari: {
-    label: "Safari",
-    color: "hsl(var(--chart-2))",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "hsl(var(--chart-3))",
-  },
-  edge: {
-    label: "Edge",
-    color: "hsl(var(--chart-4))",
-  },
-  other: {
-    label: "Other",
-    color: "hsl(var(--chart-5))",
-  },
-} satisfies ChartConfig;
+// const chartConfig = {
+//   visitors: {
+//     label: "Visitors",
+//   },
+//   chrome: {
+//     label: "Chrome",
+//     color: "hsl(var(--chart-1))",
+//   },
+//   safari: {
+//     label: "Safari",
+//     color: "hsl(var(--chart-2))",
+//   },
+//   firefox: {
+//     label: "Firefox",
+//     color: "hsl(var(--chart-3))",
+//   },
+//   edge: {
+//     label: "Edge",
+//     color: "hsl(var(--chart-4))",
+//   },
+//   other: {
+//     label: "Other",
+//     color: "hsl(var(--chart-5))",
+//   },
+// } satisfies ChartConfig;
 
 export function PieGraph({ dateRange }: PieChartProps) {
   const [chartData, setChartData] = useState<MessageProviderReportSchema[]>([]);
+  const [chartConfig, setChartConfig] = useState<{
+    [key: string]: { label: string; color: string };
+  }>({});
+
   useEffect(() => {
     const fetchChartData = async () => {
       try {
         const response = await getProviderBasedReport(dateRange);
-        const processedData = response.map((item: any) => ({
-          ...item,
-          fill: getRandomColor(), // Assign random color
-        }));
+        const config: { [key: string]: { label: string; color: string } } = {};
+        const processedData = response.map((item: any) => {
+          const color = getRandomColor();
+          config[item.Provider] = { label: item.Provider, color };
+          return {
+            ...item,
+            fill: color, // Assign random color
+          };
+        });
         setChartData(processedData);
+        setChartConfig(config);
       } catch (error) {
         console.error("Failed to fetch chart data:", error);
       }
@@ -86,13 +96,15 @@ export function PieGraph({ dateRange }: PieChartProps) {
   }, [dateRange]);
   const totalMessages = React.useMemo(() => {
     return chartData.reduce((acc, curr) => acc + curr.TotalMessages, 0);
-  }, []);
+  }, [chartData]);
 
   return (
     <Card className="flex flex-col">
       <CardHeader className="items-center pb-0">
-        <CardTitle>Pie Chart - Donut with Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Provider based Report</CardTitle>
+        <CardDescription>
+          {dateRange?.from?.toDateString()}- {dateRange?.to?.toDateString()}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
@@ -133,7 +145,7 @@ export function PieGraph({ dateRange }: PieChartProps) {
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground"
                         >
-                          Visitors
+                          Messages
                         </tspan>
                       </text>
                     );
@@ -145,12 +157,15 @@ export function PieGraph({ dateRange }: PieChartProps) {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex-col gap-2 text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Showing total visitors for the last 6 months
-        </div>
+        {Object.keys(chartConfig).map((key) => (
+          <div key={key} className="flex items-center gap-2">
+            <div
+              className="h-4 w-4 rounded-full"
+              style={{ backgroundColor: chartConfig[key].color }}
+            ></div>
+            <span>{chartConfig[key].label}</span>
+          </div>
+        ))}
       </CardFooter>
     </Card>
   );

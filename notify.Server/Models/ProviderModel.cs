@@ -24,8 +24,8 @@ namespace notify.Server.Models
         public string Secret { get; set; }
         public DateTime CreatedAt { get; set; }
     }
-    public class ProviderTokenModel : ProviderModel
-    {
-        public string? Token { get; set; }
-    }
+    //public class ProviderTokenModel : ProviderModel
+    //{
+    //    public string? Token { get; set; }
+    //}
 }
