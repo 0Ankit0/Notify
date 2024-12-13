@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using notify.Server.Classes;
 using notify.Server.Filters;
 using Notify.Server.Data;
-using Notify.Server.Services;
+using notify.Server.Factory.NotificationFactory;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +30,9 @@ builder.Services.AddScoped<ICustomMethods, CustomMethods>();
 // Add the TokenValidationFilter as a service
 builder.Services.AddScoped<TokenValidationFilter>();
 
-// Register the notification service in the dependency injection container.
-builder.Services.AddHttpClient<INotificationService, NotificationService>();
+// Register the notification factory in the dependency injection container.
+builder.Services.AddHttpClient();
+builder.Services.AddTransient<NotificationFactory>();
 
 // Configure the DbContext with a connection string
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
