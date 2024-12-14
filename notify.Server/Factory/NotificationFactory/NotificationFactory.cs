@@ -13,7 +13,7 @@ namespace notify.Server.Factory.NotificationFactory
             _httpClient = httpClient;
         }
 
-        public INotification GetNotification(ProviderModel provider)
+        public INotification GetNotification(ProviderMaster provider)
         {
             switch (provider.Provider)
             {

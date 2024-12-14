@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using notify.Server.Classes;
+using notify.Server.Factory.NotificationFactory;
 using notify.Server.Filters;
 using notify.Server.Models;
 using Notify.Server.Data;
 using Notify.Server.Data.Messages;
 using Notify.Server.Data.Providers;
-using Notify.Server.Services;
 
 namespace notify.Server.Controllers
 {
@@ -23,13 +23,13 @@ namespace notify.Server.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly ICustomMethods _customMethods;
-        private readonly INotificationService _notificationService;
+        private readonly NotificationFactory _notificationFactory;
 
-        public MessagesController(ApplicationDbContext context, ICustomMethods customMethods, INotificationService notificationService)
+        public MessagesController(ApplicationDbContext context, ICustomMethods customMethods, NotificationFactory notificationFactory)
         {
             _context = context;
             _customMethods = customMethods;
-            _notificationService = notificationService;
+            _notificationFactory = notificationFactory;
         }
 
         // GET: api/Messages
@@ -168,7 +168,7 @@ namespace notify.Server.Controllers
             try
             {
 
-                var result = await _notificationService.SendNotification(provider, messageModel);
+                var result = await _notificationFactory.GetNotification(provider).Send(provider, messageModel);
                 if (!result)
                 {
                     return BadRequest("Failed to send notification");
