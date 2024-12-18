@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using notify.Server.Classes;
@@ -136,8 +137,8 @@ namespace notify.Server.Controllers
             try
             {
                 //await _context.SaveChangesAsync();
-                var sendMessage = await SendMessage(messageModel, provider);
-                if (sendMessage is BadRequestObjectResult)
+                var sendMessage =  await _notificationFactory.GetNotification(provider).Send(provider, messageModel);
+                if (sendMessage is false)
                 {
                     message.Status = MessageStatus.Failed;
                     await _context.SaveChangesAsync();
@@ -145,8 +146,6 @@ namespace notify.Server.Controllers
                 }
                 message.Status = MessageStatus.Sent;
                 await _context.SaveChangesAsync();
-
-
             }
             catch (DbUpdateException)
             {
@@ -162,26 +161,51 @@ namespace notify.Server.Controllers
 
             return CreatedAtAction("Get", new { id = message.Id }, messageModel);
         }
-
-        private async Task<IActionResult> SendMessage(MessageModel messageModel, ProviderMaster provider)
+         [HttpPost("Multiple")]
+        [AllowAnonymous]
+        [ServiceFilter(typeof(TokenValidationFilter))]
+        public async Task<ActionResult<MessageModel>> PostMultiple([FromBody] List<MessageModel> messageModel)
         {
+            if (HttpContext.Items["Provider"] is not ProviderMaster provider)
+            {
+                return Unauthorized();
+            }
+            //map messagemodel list to Message list
+            List<Message> messages = new List<Message>();
+            foreach (var item in messageModel)
+            {
+                Message message = new Message();
+                message.Content = item.Content;
+                message.Receiver = item.Receiver;
+                message.Title = item.Title;
+                message.CreatedAt = DateTime.Now;
+
+                message.Status = MessageStatus.Pending;
+                message.Provider = provider;
+                messages.Add(message);
+            }
+            _context.Messages.AddRange(messages);
             try
             {
-
-                var result = await _notificationFactory.GetNotification(provider).Send(provider, messageModel);
-                if (!result)
+                //await _context.SaveChangesAsync();
+                var result = await _notificationFactory.GetNotification(provider).SendMultiple(provider, messageModel);
+                if (result is false)
                 {
+                    messages.ForEach(m => m.Status = MessageStatus.Failed);
+                    await _context.SaveChangesAsync();
                     return BadRequest("Failed to send notification");
                 }
+                messages.ForEach(m => m.Status = MessageStatus.Sent);
+                await _context.SaveChangesAsync();
 
-                return Ok("Notification sent successfully");
+
             }
-            catch (Exception ex)
+            catch (DbUpdateException)
             {
-                return BadRequest(ex.Message);
+                return Conflict();
             }
+            return Ok("Messages sent successfully");
         }
-
         // DELETE: api/Messages/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
